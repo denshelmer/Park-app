@@ -1,0 +1,19 @@
+Funcionalidades del Sistema
+
+El sistema de gestión y reserva de parqueos en tiempo real contará con las siguientes funcionalidades principales:
+
+Registro y autenticación de usuarios: Permitirá el ingreso al sistema mediante credenciales (usuario y contraseña), diferenciando entre conductores y administradores de parqueos, garantizando la seguridad y control de acceso a la información.
+
+Gestión de parqueos y espacios: Los administradores podrán dar de alta, modificar y eliminar estacionamientos, así como gestionar sus espacios disponibles, incluyendo número de espacio, tipo de vehículo y estado (disponible, ocupado, reservado o en mantenimiento).
+
+Reserva en tiempo real: Los conductores podrán consultar la disponibilidad de espacios en diferentes parqueos de la ciudad de El Alto y realizar reservas anticipadas, con actualización automática del estado de los espacios para evitar la doble asignación.
+
+Control de ingresos y salidas: Registro automático de la hora de entrada y salida de vehículos, calculando el tiempo de estancia y el costo a pagar según la tarifa configurada, reduciendo errores humanos en el cobro.
+
+Generación de reportes: Emisión de informes de ocupación, ingresos económicos diarios/semanales/mensuales, historial de reservas por conductor y análisis de flujo vehicular, facilitando la toma de decisiones administrativas.
+
+Gestión de tarifas: Configuración flexible de precios por hora, día, tipo de vehículo o promociones especiales, adaptándose a las necesidades de cada estacionamiento.
+
+Código QR para reservas: Generación de un código QR único para cada reserva realizada, el cual podrá ser presentado por el conductor al momento de ingresar al estacionamiento como comprobante de su reserva. Los pagos se gestionarán de forma externa a través de aplicaciones móviles como QR code o Qr simple, registrando el operador la confirmación del pago en el sistema.
+
+Interfaz intuitiva: Formularios simples, menús claros y opciones organizadas que permitan su uso por personal sin conocimientos técnicos avanzados, facilitando la adopción tecnológica en pequeños negocios.

@@ -1,0 +1,57 @@
+/* ==============================================================================
+   ESTILOS GENERALES - PARKAPP EL ALTO
+   ============================================================================== */
+
+:root {
+    --park-primary: #0d6efd;
+    --park-warning: #ffc107;
+    --park-dark: #212529;
+    --park-success: #198754;
+    --park-danger: #dc3545;
+}
+
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #333;
+}
+
+/* Tarjetas de Parqueo en Disponibilidad */
+.park-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.park-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Cuadrícula de Caseta (Slots de estacionamiento) */
+.slot-card {
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+.slot-card:hover {
+    transform: scale(1.03);
+}
+
+.slot-available {
+    background-color: #f0fff4;
+}
+
+.slot-occupied {
+    background-color: #fff5f5;
+}
+
+.slot-reserved {
+    background-color: #fffdf0;
+}
+
+.slot-maintenance {
+    background-color: #f8f9fa;
+    opacity: 0.7;
+}
+
+/* Navbar */
+.navbar-brand {
+    letter-spacing: 0.5px;
+}

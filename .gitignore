@@ -1,0 +1,20 @@
+# Archivos temporales y de bloqueo de Microsoft Access (CRÍTICO)
+*.laccdb
+*.ldb
+~$*
+
+# Archivos del sistema operativo Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Entornos y editores de código
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs y volcados temporales
+*.log
+scratch/
