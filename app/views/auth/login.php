@@ -16,12 +16,26 @@
             <p class="text-muted small">Ingreso al Sistema de Parqueos</p>
         </div>
 
+        <?php if (!empty($error)): ?>
+            <div class="alert alert-danger alert-dismissible fade show small" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i><?= htmlspecialchars($error) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($success)): ?>
+            <div class="alert alert-success alert-dismissible fade show small" role="alert">
+                <i class="bi bi-check-circle-fill me-1"></i><?= htmlspecialchars($success) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
         <form action="<?= BASE_URL ?>/login" method="POST">
             <div class="mb-3">
                 <label for="email" class="form-label fw-semibold">Correo Electrónico</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="ejemplo@parkapp.bo" required autofocus>
+                    <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($email ?? '') ?>" placeholder="ejemplo@parkapp.bo" required autofocus>
                 </div>
             </div>
 

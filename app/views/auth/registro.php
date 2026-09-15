@@ -16,26 +16,33 @@
             <p class="text-muted small">Reserva espacios en tiempo real en El Alto</p>
         </div>
 
+        <?php if (!empty($error)): ?>
+            <div class="alert alert-danger alert-dismissible fade show small" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i><?= htmlspecialchars($error) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
         <form action="<?= BASE_URL ?>/registro" method="POST">
             <div class="mb-3">
                 <label for="nombre_completo" class="form-label fw-semibold">Nombre Completo</label>
-                <input type="text" class="form-control" id="nombre_completo" name="nombre_completo" placeholder="Ej. Juan Pérez Ramos" required>
+                <input type="text" class="form-control" id="nombre_completo" name="nombre_completo" value="<?= htmlspecialchars($valores['nombre_completo'] ?? '') ?>" placeholder="Ej. Juan Pérez Ramos" required autofocus>
             </div>
 
             <div class="row g-2 mb-3">
                 <div class="col-md-6">
                     <label for="ci_nit" class="form-label fw-semibold">CI / Documento</label>
-                    <input type="text" class="form-control" id="ci_nit" name="ci_nit" placeholder="Ej. 6849201 LP" required>
+                    <input type="text" class="form-control" id="ci_nit" name="ci_nit" value="<?= htmlspecialchars($valores['ci_nit'] ?? '') ?>" placeholder="Ej. 6849201 LP" required>
                 </div>
                 <div class="col-md-6">
                     <label for="telefono" class="form-label fw-semibold">Teléfono / Celular</label>
-                    <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="Ej. 71234567" required>
+                    <input type="tel" class="form-control" id="telefono" name="telefono" value="<?= htmlspecialchars($valores['telefono'] ?? '') ?>" placeholder="Ej. 71234567" required>
                 </div>
             </div>
 
             <div class="mb-3">
                 <label for="email" class="form-label fw-semibold">Correo Electrónico</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="conductor@ejemplo.com" required>
+                <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($valores['email'] ?? '') ?>" placeholder="conductor@ejemplo.com" required>
             </div>
 
             <div class="mb-3">

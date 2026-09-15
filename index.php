@@ -29,6 +29,7 @@ $router->get('', 'ConductorController@disponibilidad');
 $router->get('login', 'AuthController@login');
 $router->post('login', 'AuthController@authenticate');
 $router->get('registro', 'AuthController@registro');
+$router->post('registro', 'AuthController@register');
 $router->get('logout', 'AuthController@logout');
 
 // ==========================================

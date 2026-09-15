@@ -46,4 +46,13 @@ class Model {
         $stmt = $this->db->prepare($sql);
         return $stmt->execute($params);
     }
+
+    /**
+     * Obtiene el siguiente ID autoincremental para tablas de Microsoft Access
+     */
+    public function getNextId(string $primaryKey): int {
+        $sql = "SELECT MAX([{$primaryKey}]) AS max_id FROM [{$this->table}]";
+        $row = $this->queryOne($sql);
+        return ($row && isset($row['max_id']) && $row['max_id'] !== null) ? ((int)$row['max_id'] + 1) : 1;
+    }
 }
