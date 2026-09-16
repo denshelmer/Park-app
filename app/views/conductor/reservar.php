@@ -1,5 +1,5 @@
 <div class="row justify-content-center">
-    <div class="col-lg-8">
+    <div class="col-lg-10 col-xl-9">
         <!-- Tarjeta Formal de Reserva -->
         <div class="card formal-card">
             <div class="formal-header p-4" style="background-color: #f8fafc; border-bottom: 1px solid var(--park-border);">
@@ -87,6 +87,71 @@
                         </div>
                     </div>
 
+                    <!-- SELECTOR GRÁFICO INTERACTIVO DE ESPACIOS (ESTILO CINE / BAHÍAS DE PARQUEO) -->
+                    <input type="hidden" name="id_espacio" id="input_id_espacio" value="">
+
+                    <div class="mt-4 pt-3 border-top">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <label class="form-label fw-bold mb-0" style="color: var(--park-primary); font-size: 1rem;">
+                                <i class="bi bi-grid-3x3-gap-fill me-1" style="color: var(--park-accent);"></i> Distribución de Espacios (Mapa Interactivo)
+                            </label>
+                            <span class="badge bg-light text-secondary border px-3 py-2" id="map-status-badge">
+                                <i class="bi bi-info-circle me-1"></i>Haga clic en un cajón libre
+                            </span>
+                        </div>
+                        <p class="text-muted small mb-3">
+                            Seleccione visualmente el cajón que prefiera (como al elegir asientos de cine). Si prefiere que el sistema le asigne automáticamente el mejor lugar disponible, simplemente complete sus datos y confirme su reserva.
+                        </p>
+
+                        <!-- Barra de Leyenda Estilo Sala de Cine -->
+                        <div class="parking-legend-bar">
+                            <div class="parking-legend-item">
+                                <span class="parking-legend-badge legend-available"></span>
+                                <span>Disponible</span>
+                            </div>
+                            <div class="parking-legend-item">
+                                <span class="parking-legend-badge legend-selected"></span>
+                                <span>Tu Selección</span>
+                            </div>
+                            <div class="parking-legend-item">
+                                <span class="parking-legend-badge legend-occupied"></span>
+                                <span>Ocupado</span>
+                            </div>
+                            <div class="parking-legend-item">
+                                <span class="parking-legend-badge legend-reserved"></span>
+                                <span>Reservado</span>
+                            </div>
+                            <div class="parking-legend-item">
+                                <span class="parking-legend-badge legend-maint"></span>
+                                <span>Taller</span>
+                            </div>
+                        </div>
+
+                        <!-- Contenedor del Mapa -->
+                        <div class="parking-map-container" id="parking-map-box">
+                            <div class="text-center py-4 text-muted" id="map-loading-placeholder">
+                                <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div>
+                                <div>Cargando distribución de espacios del establecimiento...</div>
+                            </div>
+                            <div id="parking-map-content" style="display: none;"></div>
+                        </div>
+
+                        <!-- Banner de Confirmación del Espacio Seleccionado -->
+                        <div class="active-selection-callout" id="active-selection-box" style="display: none;">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-check-circle-fill text-success fs-4"></i>
+                                <div>
+                                    <strong class="text-dark">Espacio Seleccionado:</strong>
+                                    <span class="badge fs-6 ms-2 px-3 py-1" style="background-color: var(--park-primary); color: #ffffff;" id="selected-space-name">A-02</span>
+                                    <span class="text-muted small ms-2" id="selected-space-sector">(Sector A)</span>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-clear-selection" title="Cambiar a asignación automática">
+                                <i class="bi bi-x-circle me-1"></i>Desmarcar (Auto)
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Alerta de Tolerancia Formal -->
                     <div class="classic-alert classic-alert-warning mt-4 mb-4">
                         <i class="bi bi-info-circle alert-icon"></i>
@@ -109,4 +174,445 @@
         </div>
     </div>
 </div>
+
+<!-- ESTILOS INLINE DE LA CUADRÍCULA ESTILO CINE (Inmunes a caché de navegador) -->
+<style>
+.parking-map-container {
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 15px;
+}
+
+.parking-legend-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 12px 16px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.parking-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.parking-legend-badge {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    display: inline-block;
+    border: 2px solid;
+}
+
+.legend-available { background-color: #d1fae5; border-color: #10b981; }
+.legend-selected  { background-color: #1e3a5f; border-color: #c89234; box-shadow: 0 0 0 2px #c89234; }
+.legend-occupied  { background-color: #fee2e2; border-color: #ef4444; }
+.legend-reserved  { background-color: #fef3c7; border-color: #f59e0b; }
+.legend-maint     { background-color: #e2e8f0; border-color: #94a3b8; }
+
+.sector-wrapper {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+}
+
+.sector-title-badge {
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #1e3a5f;
+    background: #edf2f7;
+    padding: 6px 14px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+/* Cuadrícula estilo slots de cine / bahías de estacionamiento */
+.parking-slots-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)) !important;
+    gap: 14px !important;
+}
+
+/* Cajón individual de estacionamiento */
+.parking-slot-item {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 6px;
+    text-align: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 110px;
+}
+
+.parking-slot-code {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 2px;
+    font-family: 'Consolas', 'Monaco', monospace, sans-serif;
+}
+
+.parking-slot-type {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #64748b;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.parking-slot-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* 1. Estado: DISPONIBLE (Verde, interactivo) */
+.parking-slot-item.is-available {
+    border: 2px solid #10b981 !important;
+    background: #ecfdf5 !important;
+    cursor: pointer !important;
+}
+.parking-slot-item.is-available:hover {
+    transform: translateY(-4px) scale(1.04);
+    border-color: #059669 !important;
+    background: #d1fae5 !important;
+    box-shadow: 0 8px 16px rgba(16, 185, 129, 0.25) !important;
+}
+.parking-slot-item.is-available .parking-slot-code {
+    color: #065f46 !important;
+}
+.parking-slot-item.is-available .slot-icon {
+    color: #10b981 !important;
+}
+.parking-slot-item.is-available .parking-slot-badge {
+    background: #a7f3d0 !important;
+    color: #065f46 !important;
+}
+
+/* 2. Estado: SELECCIONADO (Dorado & Marino institucional) */
+.parking-slot-item.is-selected {
+    border: 3px solid #c89234 !important;
+    background: linear-gradient(145deg, #1e3a5f, #152b47) !important;
+    color: #ffffff !important;
+    cursor: pointer !important;
+    transform: translateY(-4px) scale(1.06);
+    box-shadow: 0 10px 22px rgba(30, 58, 95, 0.4), 0 0 0 3px rgba(200, 146, 52, 0.5) !important;
+}
+.parking-slot-item.is-selected .parking-slot-code {
+    color: #ffffff !important;
+}
+.parking-slot-item.is-selected .slot-icon {
+    color: #c89234 !important;
+}
+.parking-slot-item.is-selected .parking-slot-type {
+    color: #cbd5e1 !important;
+}
+.parking-slot-item.is-selected .parking-slot-badge {
+    background: #c89234 !important;
+    color: #ffffff !important;
+}
+
+/* 3. Estado: OCUPADO (Rojo deshabilitado) */
+.parking-slot-item.is-occupied {
+    border: 2px dashed #f87171 !important;
+    background: #fef2f2 !important;
+    opacity: 0.78;
+    cursor: not-allowed !important;
+}
+.parking-slot-item.is-occupied .parking-slot-code {
+    color: #b91c1c !important;
+}
+.parking-slot-item.is-occupied .slot-icon {
+    color: #ef4444 !important;
+}
+.parking-slot-item.is-occupied .parking-slot-badge {
+    background: #fee2e2 !important;
+    color: #b91c1c !important;
+}
+
+/* 4. Estado: RESERVADO (Ámbar deshabilitado) */
+.parking-slot-item.is-reserved {
+    border: 2px dashed #fbbf24 !important;
+    background: #fffbeb !important;
+    opacity: 0.78;
+    cursor: not-allowed !important;
+}
+.parking-slot-item.is-reserved .parking-slot-code {
+    color: #b45309 !important;
+}
+.parking-slot-item.is-reserved .slot-icon {
+    color: #f59e0b !important;
+}
+.parking-slot-item.is-reserved .parking-slot-badge {
+    background: #fef3c7 !important;
+    color: #b45309 !important;
+}
+
+/* 5. Estado: MANTENIMIENTO (Gris deshabilitado) */
+.parking-slot-item.is-maintenance {
+    border: 2px dashed #cbd5e1 !important;
+    background: #f8fafc !important;
+    opacity: 0.65;
+    cursor: not-allowed !important;
+}
+.parking-slot-item.is-maintenance .parking-slot-code {
+    color: #64748b !important;
+}
+.parking-slot-item.is-maintenance .slot-icon {
+    color: #94a3b8 !important;
+}
+.parking-slot-item.is-maintenance .parking-slot-badge {
+    background: #e2e8f0 !important;
+    color: #64748b !important;
+}
+
+/* Banner de Notificación de Selección Activa */
+.active-selection-callout {
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    border-left: 5px solid #16a34a;
+    border-radius: 8px;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+    font-size: 0.92rem;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.08);
+}
+</style>
+
+<!-- SCRIPT INTERACTIVO DEL MAPA DE ESPACIOS (ESTILO CINE) -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectParqueo = document.querySelector('select[name="id_parqueo"]');
+    const selectTipo = document.querySelector('select[name="id_tipo_vehiculo"]');
+    const inputEspacio = document.getElementById('input_id_espacio');
+    const mapPlaceholder = document.getElementById('map-loading-placeholder');
+    const mapContent = document.getElementById('parking-map-content');
+    const selectionBox = document.getElementById('active-selection-box');
+    const selectedName = document.getElementById('selected-space-name');
+    const selectedSector = document.getElementById('selected-space-sector');
+    const btnClearSelection = document.getElementById('btn-clear-selection');
+    const mapStatusBadge = document.getElementById('map-status-badge');
+
+    function getVehicleIcon(nombreTipo) {
+        const nombre = (nombreTipo || '').toLowerCase();
+        if (nombre.includes('moto')) return 'bi-bicycle';
+        if (nombre.includes('camion') || nombre.includes('mini') || nombre.includes('bus')) return 'bi-truck';
+        return 'bi-car-front-fill';
+    }
+
+    function desmarcarEspacio() {
+        inputEspacio.value = '';
+        document.querySelectorAll('.parking-slot-item.is-selected').forEach(el => {
+            el.classList.remove('is-selected');
+            el.classList.add('is-available');
+            const badge = el.querySelector('.parking-slot-badge');
+            if (badge) {
+                badge.textContent = 'Libre';
+            }
+        });
+        selectionBox.style.display = 'none';
+        mapStatusBadge.className = 'badge bg-light text-secondary border px-3 py-2';
+        mapStatusBadge.innerHTML = '<i class="bi bi-info-circle me-1"></i>Asignación automática';
+    }
+
+    if (btnClearSelection) {
+        btnClearSelection.addEventListener('click', desmarcarEspacio);
+    }
+
+    function cargarMapaEspacios() {
+        const parqueoId = selectParqueo.value;
+        const tipoId = selectTipo.value;
+
+        if (!parqueoId) {
+            mapPlaceholder.innerHTML = '<div class="text-muted"><i class="bi bi-arrow-up-circle me-1"></i>Seleccione un parqueo para ver la distribución de espacios.</div>';
+            mapPlaceholder.style.display = 'block';
+            mapContent.style.display = 'none';
+            desmarcarEspacio();
+            return;
+        }
+
+        mapPlaceholder.innerHTML = '<div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div><div>Cargando espacios del establecimiento...</div>';
+        mapPlaceholder.style.display = 'block';
+        mapContent.style.display = 'none';
+
+        let url = '<?= BASE_URL ?>/api/espacios?parqueo=' + encodeURIComponent(parqueoId);
+        if (tipoId) {
+            url += '&tipo=' + encodeURIComponent(tipoId);
+        }
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                mapPlaceholder.style.display = 'none';
+                mapContent.innerHTML = '';
+
+                if (!data.success || data.total_espacios === 0) {
+                    mapContent.innerHTML = `
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-exclamation-circle text-warning fs-3 d-block mb-2"></i>
+                            <div>No se encontraron espacios registrados para este parqueo con el tipo de vehículo seleccionado.</div>
+                            <small class="text-secondary">El sistema intentará asignar un cajón automáticamente al confirmar.</small>
+                        </div>
+                    `;
+                    mapContent.style.display = 'block';
+                    desmarcarEspacio();
+                    return;
+                }
+
+                // Renderizar sectores en contenedores estilizados
+                for (const [sector, espacios] of Object.entries(data.sectores)) {
+                    const sectorDiv = document.createElement('div');
+                    sectorDiv.className = 'sector-wrapper mb-4';
+
+                    const headerBadge = document.createElement('div');
+                    headerBadge.className = 'sector-title-badge';
+                    headerBadge.innerHTML = `<i class="bi bi-layers-half"></i> ${sector} <span class="badge bg-secondary ms-1">${espacios.length} cajones</span>`;
+                    sectorDiv.appendChild(headerBadge);
+
+                    const gridDiv = document.createElement('div');
+                    gridDiv.className = 'parking-slots-grid';
+
+                    espacios.forEach(esp => {
+                        const slot = document.createElement('div');
+                        slot.className = 'parking-slot-item';
+                        slot.dataset.id = esp.id_espacio;
+                        slot.dataset.codigo = esp.codigo_espacio;
+                        slot.dataset.sector = sector;
+                        slot.dataset.estado = esp.estado;
+                        slot.dataset.tipo = esp.nombre_tipo;
+
+                        const iconClass = getVehicleIcon(esp.nombre_tipo);
+
+                        let badgeText = esp.estado;
+                        if (esp.estado === 'Disponible') {
+                            slot.classList.add('is-available');
+                            badgeText = 'Libre';
+                        } else if (esp.estado === 'Ocupado') {
+                            slot.classList.add('is-occupied');
+                            badgeText = 'Ocupado';
+                        } else if (esp.estado === 'Reservado') {
+                            slot.classList.add('is-reserved');
+                            badgeText = 'Reservado';
+                        } else {
+                            slot.classList.add('is-maintenance');
+                            badgeText = 'Taller';
+                        }
+
+                        // Si este espacio ya estaba seleccionado previamente
+                        if (inputEspacio.value && parseInt(inputEspacio.value) === esp.id_espacio && esp.estado === 'Disponible') {
+                            slot.classList.remove('is-available');
+                            slot.classList.add('is-selected');
+                            badgeText = 'Tu Selección';
+                        }
+
+                        slot.innerHTML = `
+                            <div class="slot-icon mb-1" style="font-size: 1.25rem;"><i class="bi ${iconClass}"></i></div>
+                            <span class="parking-slot-code">${esp.codigo_espacio}</span>
+                            <span class="parking-slot-type">${esp.nombre_tipo || 'General'}</span>
+                            <span class="parking-slot-badge">${badgeText}</span>
+                        `;
+
+                        // Interacción tipo cine con un clic
+                        if (esp.estado === 'Disponible') {
+                            slot.addEventListener('click', function() {
+                                // Si ya está seleccionado, desmarcar
+                                if (slot.classList.contains('is-selected')) {
+                                    desmarcarEspacio();
+                                    return;
+                                }
+
+                                // Desmarcar cualquier otro slot seleccionado
+                                document.querySelectorAll('.parking-slot-item.is-selected').forEach(el => {
+                                    el.classList.remove('is-selected');
+                                    el.classList.add('is-available');
+                                    const b = el.querySelector('.parking-slot-badge');
+                                    if (b) {
+                                        b.textContent = 'Libre';
+                                    }
+                                });
+
+                                // Marcar el seleccionado actual
+                                slot.classList.remove('is-available');
+                                slot.classList.add('is-selected');
+                                const badge = slot.querySelector('.parking-slot-badge');
+                                if (badge) {
+                                    badge.textContent = 'Tu Selección';
+                                }
+
+                                inputEspacio.value = esp.id_espacio;
+                                selectedName.textContent = esp.codigo_espacio;
+                                selectedSector.textContent = `(${sector} - ${esp.nombre_tipo || 'Vehículo'})`;
+                                selectionBox.style.display = 'flex';
+
+                                mapStatusBadge.className = 'badge bg-success text-white px-3 py-2';
+                                mapStatusBadge.innerHTML = `<i class="bi bi-check2-circle me-1"></i>Espacio ${esp.codigo_espacio} seleccionado`;
+                            });
+                        }
+
+                        gridDiv.appendChild(slot);
+                    });
+
+                    sectorDiv.appendChild(gridDiv);
+                    mapContent.appendChild(sectorDiv);
+                }
+
+                mapContent.style.display = 'block';
+            })
+            .catch(err => {
+                console.error('Error al cargar mapa:', err);
+                mapPlaceholder.innerHTML = '<div class="text-danger small"><i class="bi bi-exclamation-triangle me-1"></i>No se pudo cargar la distribución de espacios.</div>';
+                mapPlaceholder.style.display = 'block';
+            });
+    }
+
+    selectParqueo.addEventListener('change', function() {
+        desmarcarEspacio();
+        cargarMapaEspacios();
+    });
+
+    selectTipo.addEventListener('change', function() {
+        desmarcarEspacio();
+        cargarMapaEspacios();
+    });
+
+    // Carga inicial al entrar si ya hay un parqueo preseleccionado
+    if (selectParqueo.value) {
+        cargarMapaEspacios();
+    }
+});
+</script>
 

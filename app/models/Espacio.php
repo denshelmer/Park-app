@@ -17,6 +17,18 @@ class Espacio extends Model {
         return $this->query($sql, [$idParqueo]);
     }
 
+    public function getPorParqueoYTipo(int $idParqueo, ?int $idTipoVehiculo = null): array {
+        if ($idTipoVehiculo !== null && $idTipoVehiculo > 0) {
+            $sql = "SELECT e.*, tv.nombre_tipo 
+                    FROM [ESPACIOS] e 
+                    INNER JOIN [TIPOS_VEHICULO] tv ON e.id_tipo_vehiculo = tv.id_tipo_vehiculo 
+                    WHERE e.id_parqueo = ? AND e.id_tipo_vehiculo = ? 
+                    ORDER BY e.piso_sector, e.codigo_espacio";
+            return $this->query($sql, [$idParqueo, $idTipoVehiculo]);
+        }
+        return $this->getPorParqueo($idParqueo);
+    }
+
     public function getDisponiblesPorTipo(int $idParqueo, int $idTipoVehiculo): array {
         $sql = "SELECT * FROM [ESPACIOS] 
                 WHERE id_parqueo = ? AND id_tipo_vehiculo = ? AND estado = 'Disponible'

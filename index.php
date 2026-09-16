@@ -41,6 +41,7 @@ $router->post('reservar', 'ConductorController@procesarReserva');
 $router->get('mis-reservas', 'ConductorController@misReservas');
 $router->post('reserva/cancelar', 'ConductorController@cancelarReserva');
 $router->get('reserva/qr', 'ConductorController@verQR');
+$router->get('api/espacios', 'ConductorController@apiEspacios');
 
 // ==========================================
 // SECCIÓN 2: MÓDULO DE CASETA / OPERADOR

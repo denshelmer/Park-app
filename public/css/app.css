@@ -194,3 +194,210 @@ body {
 .navbar-brand {
     letter-spacing: 0.5px;
 }
+
+/* ==============================================================================
+   MAPA GRÁFICO INTERACTIVO DE ESPACIOS (ESTILO SALA DE CINE / BAHÍAS DE PARQUEO)
+   ============================================================================== */
+.parking-map-container {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 15px;
+}
+
+.parking-legend-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 10px 14px;
+    background: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 0.84rem;
+}
+
+.parking-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+}
+
+.parking-legend-badge {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    display: inline-block;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.legend-available { background-color: #d1fae5; border-color: #10b981; }
+.legend-selected  { background-color: #1e3a5f; border-color: #c89234; box-shadow: 0 0 0 2px #c89234; }
+.legend-occupied  { background-color: #fee2e2; border-color: #ef4444; }
+.legend-reserved  { background-color: #fef3c7; border-color: #f59e0b; }
+.legend-maint     { background-color: #e2e8f0; border-color: #94a3b8; }
+
+.sector-title-badge {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--park-primary);
+    background: #edf2f7;
+    padding: 4px 12px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.parking-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+/* Bahía individual de estacionamiento */
+.parking-slot-item {
+    position: relative;
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 8px;
+    text-align: center;
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+}
+
+.parking-slot-code {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 2px;
+    font-family: monospace, sans-serif;
+}
+
+.parking-slot-type {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--park-text-muted);
+    display: block;
+    margin-bottom: 6px;
+}
+
+.parking-slot-badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+    text-transform: uppercase;
+}
+
+/* Estado: Disponible (Clickeable estilo cine) */
+.parking-slot-item.is-available {
+    border-color: #a7f3d0;
+    background: #f0fdf4;
+    cursor: pointer;
+}
+.parking-slot-item.is-available:hover {
+    transform: translateY(-4px);
+    border-color: #10b981;
+    background: #ecfdf5;
+    box-shadow: 0 6px 14px rgba(16, 185, 129, 0.2);
+}
+.parking-slot-item.is-available .parking-slot-code {
+    color: #065f46;
+}
+.parking-slot-item.is-available .parking-slot-badge {
+    background: #d1fae5;
+    color: #047857;
+}
+
+/* Estado: Seleccionado (Marcado con borde dorado y fondo navy) */
+.parking-slot-item.is-selected {
+    border-color: var(--park-accent) !important;
+    background: linear-gradient(135deg, #1e3a5f, #152b47) !important;
+    color: #ffffff !important;
+    cursor: pointer;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 6px 18px rgba(30, 58, 95, 0.35), 0 0 0 3px rgba(200, 146, 52, 0.4) !important;
+}
+.parking-slot-item.is-selected .parking-slot-code {
+    color: #f7fafc !important;
+}
+.parking-slot-item.is-selected .parking-slot-type {
+    color: #cbd5e1 !important;
+}
+.parking-slot-item.is-selected .parking-slot-badge {
+    background: var(--park-accent) !important;
+    color: #ffffff !important;
+}
+
+/* Estado: Ocupado */
+.parking-slot-item.is-occupied {
+    border-color: #fecaca;
+    background: #fef2f2;
+    opacity: 0.75;
+    cursor: not-allowed;
+}
+.parking-slot-item.is-occupied .parking-slot-code {
+    color: #991b1b;
+}
+.parking-slot-item.is-occupied .parking-slot-badge {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* Estado: Reservado */
+.parking-slot-item.is-reserved {
+    border-color: #fde68a;
+    background: #fffbeb;
+    opacity: 0.75;
+    cursor: not-allowed;
+}
+.parking-slot-item.is-reserved .parking-slot-code {
+    color: #92400e;
+}
+.parking-slot-item.is-reserved .parking-slot-badge {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+/* Estado: Mantenimiento */
+.parking-slot-item.is-maintenance {
+    border-color: #e2e8f0;
+    background: #f1f5f9;
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+.parking-slot-item.is-maintenance .parking-slot-code {
+    color: #64748b;
+}
+.parking-slot-item.is-maintenance .parking-slot-badge {
+    background: #e2e8f0;
+    color: #64748b;
+}
+
+/* Notificación de Selección Activa */
+.active-selection-callout {
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    border-left: 4px solid #16a34a;
+    border-radius: 6px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    font-size: 0.9rem;
+}
+

@@ -89,8 +89,28 @@ class ConductorController extends Controller {
             return;
         }
 
-        // 4. Buscar espacio libre para este parqueo y tipo de vehículo
-        $espacio = $this->espacioModel->buscarPrimerDisponible($idParqueo, $idTipoVehiculo);
+        // 4. Determinar espacio: selección manual en el mapa o asignación automática
+        $idEspacioSeleccionado = (int)($_POST['id_espacio'] ?? 0);
+        $espacio = null;
+
+        if ($idEspacioSeleccionado > 0) {
+            $espacioCandidato = $this->espacioModel->findById($idEspacioSeleccionado);
+            if (
+                $espacioCandidato && 
+                (int)$espacioCandidato['id_parqueo'] === $idParqueo && 
+                (int)$espacioCandidato['id_tipo_vehiculo'] === $idTipoVehiculo && 
+                $espacioCandidato['estado'] === 'Disponible'
+            ) {
+                $espacio = $espacioCandidato;
+            } else {
+                $_SESSION['flash_error'] = 'El espacio seleccionado ya no está disponible o no coincide con el tipo de vehículo. Por favor seleccione otro espacio del mapa.';
+                $this->redirect("reservar?parqueo={$idParqueo}");
+                return;
+            }
+        } else {
+            $espacio = $this->espacioModel->buscarPrimerDisponible($idParqueo, $idTipoVehiculo);
+        }
+
         if (!$espacio) {
             $_SESSION['flash_error'] = 'Lo sentimos, no hay espacios libres disponibles para este tipo de vehículo en el parqueo seleccionado.';
             $this->redirect("reservar?parqueo={$idParqueo}");
@@ -194,6 +214,47 @@ class ConductorController extends Controller {
             'reserva' => $reserva,
             'success' => $success
         ]);
+    }
+
+    /**
+     * Endpoint API JSON para consultar los espacios de un parqueo (agrupados por sector)
+     */
+    public function apiEspacios(): void {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $idParqueo = (int)($_GET['parqueo'] ?? 0);
+        $idTipoVehiculo = isset($_GET['tipo']) && (int)$_GET['tipo'] > 0 ? (int)$_GET['tipo'] : null;
+
+        if ($idParqueo <= 0) {
+            echo json_encode(['success' => false, 'error' => 'ID de parqueo inválido.']);
+            exit;
+        }
+
+        $espacios = $this->espacioModel->getPorParqueoYTipo($idParqueo, $idTipoVehiculo);
+
+        // Agrupar por sector / piso
+        $sectores = [];
+        foreach ($espacios as $esp) {
+            $sector = !empty($esp['piso_sector']) ? $esp['piso_sector'] : 'Sector Principal';
+            if (!isset($sectores[$sector])) {
+                $sectores[$sector] = [];
+            }
+            $sectores[$sector][] = [
+                'id_espacio' => (int)$esp['id_espacio'],
+                'codigo_espacio' => $esp['codigo_espacio'],
+                'id_tipo_vehiculo' => (int)$esp['id_tipo_vehiculo'],
+                'nombre_tipo' => $esp['nombre_tipo'] ?? '',
+                'estado' => $esp['estado']
+            ];
+        }
+
+        echo json_encode([
+            'success' => true,
+            'parqueo_id' => $idParqueo,
+            'total_espacios' => count($espacios),
+            'sectores' => $sectores
+        ]);
+        exit;
     }
 }
 
