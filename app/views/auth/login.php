@@ -35,7 +35,7 @@
                 <label for="email" class="form-label fw-semibold">Correo Electrónico</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                    <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($email ?? '') ?>" placeholder="ejemplo@parkapp.bo" required autofocus>
+                    <input type="email" class="form-control" id="email" name="email" value="<?= htmlspecialchars($email ?? '') ?>" placeholder="ejemplo@parkapp.bo" maxlength="100" autocomplete="email" required autofocus>
                 </div>
             </div>
 
@@ -43,7 +43,10 @@
                 <label for="password" class="form-label fw-semibold">Contraseña</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" maxlength="50" autocomplete="current-password" required>
+                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password', this)" title="Mostrar / Ocultar contraseña">
+                        <i class="bi bi-eye"></i>
+                    </button>
                 </div>
             </div>
 
@@ -63,5 +66,8 @@
             </a>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="<?= BASE_URL ?>/public/js/app.js"></script>
 </body>
 </html>

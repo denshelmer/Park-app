@@ -31,13 +31,22 @@ class AuthController extends Controller {
     }
 
     public function authenticate(): void {
-        $email = trim($_POST['email'] ?? '');
+        $email = trim(strtolower($_POST['email'] ?? ''));
         $password = trim($_POST['password'] ?? '');
 
         if (empty($email) || empty($password)) {
             $this->render('auth/login', [
                 'titulo' => 'Iniciar Sesión - ParkApp',
                 'error' => 'Por favor ingrese su correo y contraseña.',
+                'email' => $email
+            ], false);
+            return;
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->render('auth/login', [
+                'titulo' => 'Iniciar Sesión - ParkApp',
+                'error' => 'El formato del correo electrónico no es válido.',
                 'email' => $email
             ], false);
             return;
@@ -118,7 +127,7 @@ class AuthController extends Controller {
             'email' => $email
         ];
 
-        // Validaciones requeridas
+        // 1. Validar campos obligatorios
         if (empty($nombreCompleto) || empty($ciNit) || empty($telefono) || empty($email) || empty($password)) {
             $this->render('auth/registro', [
                 'titulo' => 'Registro de Conductor - ParkApp',
@@ -128,6 +137,37 @@ class AuthController extends Controller {
             return;
         }
 
+        // 2. Validar Nombre Completo (solo letras y espacios, 3-80 caracteres)
+        if (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,80}$/u', $nombreCompleto)) {
+            $this->render('auth/registro', [
+                'titulo' => 'Registro de Conductor - ParkApp',
+                'error' => 'El nombre completo solo debe contener letras y espacios (entre 3 y 80 caracteres).',
+                'valores' => $valores
+            ], false);
+            return;
+        }
+
+        // 3. Validar CI / Documento (alfanumérico, 4-20 caracteres)
+        if (!preg_match('/^[0-9a-zA-Z\s\-]{4,20}$/', $ciNit)) {
+            $this->render('auth/registro', [
+                'titulo' => 'Registro de Conductor - ParkApp',
+                'error' => 'El documento CI / NIT debe contener entre 4 y 20 caracteres válidos.',
+                'valores' => $valores
+            ], false);
+            return;
+        }
+
+        // 4. Validar Teléfono (solo números, 7-10 dígitos)
+        if (!preg_match('/^[0-9]{7,10}$/', $telefono)) {
+            $this->render('auth/registro', [
+                'titulo' => 'Registro de Conductor - ParkApp',
+                'error' => 'El teléfono debe contener únicamente números (entre 7 y 10 dígitos).',
+                'valores' => $valores
+            ], false);
+            return;
+        }
+
+        // 5. Validar formato de Correo Electrónico
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->render('auth/registro', [
                 'titulo' => 'Registro de Conductor - ParkApp',
@@ -137,15 +177,17 @@ class AuthController extends Controller {
             return;
         }
 
-        if (strlen($password) < 6) {
+        // 6. Validar longitud de Contraseña (mínimo 8 caracteres)
+        if (strlen($password) < 8) {
             $this->render('auth/registro', [
                 'titulo' => 'Registro de Conductor - ParkApp',
-                'error' => 'La contraseña debe tener al menos 6 caracteres.',
+                'error' => 'La contraseña debe tener al menos 8 caracteres.',
                 'valores' => $valores
             ], false);
             return;
         }
 
+        // 7. Validar correo no duplicado
         if ($this->usuarioModel->emailExiste($email)) {
             $this->render('auth/registro', [
                 'titulo' => 'Registro de Conductor - ParkApp',
