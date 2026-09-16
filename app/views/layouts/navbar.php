@@ -3,10 +3,10 @@ $isAuth = Auth::check();
 $rol = Auth::roleId();
 $userName = Auth::user()['nombre_completo'] ?? '';
 ?>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark shadow-sm" style="background-color: #152b47; border-bottom: 2px solid #c89234;">
     <div class="container-fluid">
-        <a class="navbar-brand fw-bold text-warning" href="<?= BASE_URL ?>/">
-            <i class="bi bi-p-square-fill me-2"></i>ParkApp El Alto
+        <a class="navbar-brand fw-bold" style="color: #ffffff; letter-spacing: 0.5px;" href="<?= BASE_URL ?>/">
+            <i class="bi bi-p-square-fill me-2" style="color: #c89234;"></i>ParkApp <span class="badge bg-light text-dark fw-normal ms-1" style="font-size: 0.72rem; vertical-align: middle;">El Alto</span>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
             <span class="navbar-toggler-icon"></span>
@@ -72,7 +72,7 @@ $userName = Auth::user()['nombre_completo'] ?? '';
                         <a class="nav-link" href="<?= BASE_URL ?>/registro"><i class="bi bi-person-plus me-1"></i>Registrarse</a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-outline-warning btn-sm ms-2 px-3" href="<?= BASE_URL ?>/login"><i class="bi bi-box-arrow-in-right me-1"></i>Ingresar</a>
+                        <a class="btn btn-sm ms-2 px-3 fw-semibold text-white" style="background-color: #c89234;" href="<?= BASE_URL ?>/login"><i class="bi bi-box-arrow-in-right me-1"></i>Ingresar</a>
                     </li>
                 <?php endif; ?>
             </ul>

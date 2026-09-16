@@ -115,29 +115,40 @@ class AuthController extends Controller {
 
     public function register(): void {
         $nombreCompleto = trim($_POST['nombre_completo'] ?? '');
-        $ciNit = trim($_POST['ci_nit'] ?? '');
+        $ciNumero = trim($_POST['ci_numero'] ?? '');
+        $ciExtension = trim($_POST['ci_extension'] ?? 'LP');
         $telefono = trim($_POST['telefono'] ?? '');
         $email = trim(strtolower($_POST['email'] ?? ''));
         $password = trim($_POST['password'] ?? '');
+        $passwordConfirm = trim($_POST['password_confirm'] ?? '');
+
+        // Formateo de CI con extensión de Bolivia
+        $extensionesValidas = ['LP', 'CB', 'SC', 'OR', 'PT', 'TJ', 'CH', 'BN', 'PA', 'S/E'];
+        if (!in_array($ciExtension, $extensionesValidas)) {
+            $ciExtension = 'LP';
+        }
+        $ciNit = ($ciExtension !== 'S/E' && !empty($ciExtension)) ? "{$ciNumero} {$ciExtension}" : $ciNumero;
 
         $valores = [
             'nombre_completo' => $nombreCompleto,
+            'ci_numero' => $ciNumero,
+            'ci_extension' => $ciExtension,
             'ci_nit' => $ciNit,
             'telefono' => $telefono,
             'email' => $email
         ];
 
         // 1. Validar campos obligatorios
-        if (empty($nombreCompleto) || empty($ciNit) || empty($telefono) || empty($email) || empty($password)) {
+        if (empty($nombreCompleto) || empty($ciNumero) || empty($telefono) || empty($email) || empty($password) || empty($passwordConfirm)) {
             $this->render('auth/registro', [
                 'titulo' => 'Registro de Conductor - ParkApp',
-                'error' => 'Todos los campos son obligatorios.',
+                'error' => 'Por favor complete todos los campos del formulario.',
                 'valores' => $valores
             ], false);
             return;
         }
 
-        // 2. Validar Nombre Completo (solo letras y espacios, 3-80 caracteres)
+        // 2. Validar Nombre Completo (solo letras, tildes y espacios, 3-80 caracteres)
         if (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,80}$/u', $nombreCompleto)) {
             $this->render('auth/registro', [
                 'titulo' => 'Registro de Conductor - ParkApp',
@@ -147,11 +158,11 @@ class AuthController extends Controller {
             return;
         }
 
-        // 3. Validar CI / Documento (alfanumérico, 4-20 caracteres)
-        if (!preg_match('/^[0-9a-zA-Z\s\-]{4,20}$/', $ciNit)) {
+        // 3. Validar Cédula de Identidad (número numérico entre 4 y 10 dígitos)
+        if (!preg_match('/^[0-9]{4,10}$/', $ciNumero)) {
             $this->render('auth/registro', [
                 'titulo' => 'Registro de Conductor - ParkApp',
-                'error' => 'El documento CI / NIT debe contener entre 4 y 20 caracteres válidos.',
+                'error' => 'El número de CI debe contener únicamente dígitos numéricos (entre 4 y 10 dígitos).',
                 'valores' => $valores
             ], false);
             return;
@@ -171,7 +182,7 @@ class AuthController extends Controller {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->render('auth/registro', [
                 'titulo' => 'Registro de Conductor - ParkApp',
-                'error' => 'El formato del correo electrónico no es válido.',
+                'error' => 'El formato del correo electrónico ingresado no es válido.',
                 'valores' => $valores
             ], false);
             return;
@@ -187,7 +198,17 @@ class AuthController extends Controller {
             return;
         }
 
-        // 7. Validar correo no duplicado
+        // 7. Validar coincidencia de Contraseñas
+        if ($password !== $passwordConfirm) {
+            $this->render('auth/registro', [
+                'titulo' => 'Registro de Conductor - ParkApp',
+                'error' => 'Las contraseñas ingresadas no coinciden. Por favor verifíquelas.',
+                'valores' => $valores
+            ], false);
+            return;
+        }
+
+        // 8. Validar correo no duplicado en el sistema
         if ($this->usuarioModel->emailExiste($email)) {
             $this->render('auth/registro', [
                 'titulo' => 'Registro de Conductor - ParkApp',

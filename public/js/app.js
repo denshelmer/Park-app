@@ -24,20 +24,31 @@ function togglePassword(inputId, btn) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Auto-ocultar alertas temporales (excepto errores)
-    const alerts = document.querySelectorAll('.alert-success.alert-dismissible');
-    alerts.forEach(alert => {
+    // Auto-ocultar alertas de éxito temporales tras 4 segundos
+    const successAlerts = document.querySelectorAll('.classic-alert-success, .alert-success');
+    successAlerts.forEach(alert => {
         setTimeout(() => {
-            const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
-            if (bsAlert) bsAlert.close();
+            alert.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            alert.style.opacity = '0';
+            alert.style.transform = 'translateY(-6px)';
+            setTimeout(() => {
+                if (alert.parentNode) alert.parentNode.removeChild(alert);
+            }, 400);
         }, 4000);
     });
 
-    // Filtro en tiempo real para inputs de teléfono (solo números)
-    const phoneInputs = document.querySelectorAll('input[type="tel"]');
-    phoneInputs.forEach(input => {
+    // Filtro en tiempo real para inputs numéricos estrictos (Teléfono, CI número)
+    const numericInputs = document.querySelectorAll('input[type="tel"], input.numeric-only');
+    numericInputs.forEach(input => {
         input.addEventListener('input', (e) => {
             e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+        input.addEventListener('keypress', (e) => {
+            if (e.which < 48 || e.which > 57) {
+                if (e.which !== 8 && e.which !== 0) {
+                    e.preventDefault();
+                }
+            }
         });
     });
 });

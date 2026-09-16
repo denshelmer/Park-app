@@ -1,18 +1,157 @@
 /* ==============================================================================
-   ESTILOS GENERALES - PARKAPP EL ALTO
+   ESTILOS GENERALES Y CORPORATIVOS - PARKAPP
+   Estilo: Clásico, Formal, Limpio y Elegante
    ============================================================================== */
 
 :root {
-    --park-primary: #0d6efd;
-    --park-warning: #ffc107;
-    --park-dark: #212529;
-    --park-success: #198754;
-    --park-danger: #dc3545;
+    --park-primary: #1e3a5f;       /* Azul marino clásico / Formal Navy */
+    --park-primary-hover: #152b47;
+    --park-accent: #c89234;        /* Dorado sobrio / Amber Gold */
+    --park-accent-hover: #b07d27;
+    --park-dark: #1b2430;          /* Gris carbón formal */
+    --park-surface: #ffffff;
+    --park-border: #e2e8f0;
+    --park-text-main: #2d3748;
+    --park-text-muted: #718096;
+    --park-bg: #f4f6f9;            /* Fondo gris claro institucional */
 }
 
 body {
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    color: #333;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: var(--park-text-main);
+    background-color: var(--park-bg);
+}
+
+/* ==========================================
+   ALERTAS ELEGANTES Y CLÁSICAS
+   ========================================== */
+.classic-alert {
+    border: 1px solid transparent;
+    border-left-width: 4px;
+    border-radius: 6px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    font-size: 0.92rem;
+    line-height: 1.45;
+}
+
+.classic-alert .alert-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.classic-alert-danger {
+    border-color: #fed7d7;
+    border-left-color: #e53e3e;
+    background-color: #fff5f5;
+    color: #9b2c2c;
+}
+.classic-alert-danger .alert-icon {
+    color: #e53e3e;
+}
+
+.classic-alert-success {
+    border-color: #c6f6d5;
+    border-left-color: #38a169;
+    background-color: #f0fff4;
+    color: #22543d;
+}
+.classic-alert-success .alert-icon {
+    color: #38a169;
+}
+
+.classic-alert-warning {
+    border-color: #feebc8;
+    border-left-color: #dd6b20;
+    background-color: #fffaf0;
+    color: #7b341e;
+}
+.classic-alert-warning .alert-icon {
+    color: #dd6b20;
+}
+
+/* ==========================================
+   TARJETAS Y FORMULARIOS FORMALES
+   ========================================== */
+.formal-card {
+    background: #ffffff;
+    border: 1px solid var(--park-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 18px rgba(30, 58, 95, 0.06);
+}
+
+.formal-header {
+    border-bottom: 1px solid #edf2f7;
+    padding-bottom: 18px;
+}
+
+.brand-badge {
+    width: 52px;
+    height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--park-primary), var(--park-primary-hover));
+    color: #ffffff;
+    font-size: 1.6rem;
+    box-shadow: 0 4px 12px rgba(30, 58, 95, 0.2);
+}
+
+.btn-primary-formal {
+    background-color: var(--park-primary);
+    border-color: var(--park-primary);
+    color: #ffffff;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+.btn-primary-formal:hover, .btn-primary-formal:focus {
+    background-color: var(--park-primary-hover);
+    border-color: var(--park-primary-hover);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(30, 58, 95, 0.25);
+}
+
+.btn-accent-formal {
+    background-color: var(--park-accent);
+    border-color: var(--park-accent);
+    color: #ffffff;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+.btn-accent-formal:hover, .btn-accent-formal:focus {
+    background-color: var(--park-accent-hover);
+    border-color: var(--park-accent-hover);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(200, 146, 52, 0.25);
+}
+
+/* Inputs formales */
+.form-control, .form-select {
+    border-color: #cbd5e1;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    padding: 9px 12px;
+}
+.form-control:focus, .form-select:focus {
+    border-color: var(--park-primary);
+    box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.12);
+}
+
+.input-group-text {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+    color: #64748b;
 }
 
 /* Tarjetas de Parqueo en Disponibilidad */

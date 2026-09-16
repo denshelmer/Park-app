@@ -1,9 +1,9 @@
 </main>
 
-<footer class="bg-dark text-white py-3 mt-auto text-center">
+<footer class="text-white py-3 mt-auto text-center" style="background-color: #152b47; border-top: 1px solid #233e63;">
     <div class="container">
-        <small class="text-muted">
-            &copy; <?= date('Y') ?> ParkApp - Sistema de Gestión y Reserva de Parqueos en Tiempo Real | Ciudad de El Alto
+        <small class="text-light opacity-75">
+            &copy; <?= date('Y') ?> <strong>ParkApp</strong> &mdash; Sistema de Gestión y Reserva de Parqueos en Tiempo Real | Ciudad de El Alto
         </small>
     </div>
 </footer>
