@@ -24,6 +24,22 @@ class Espacio extends Model {
         return $this->query($sql, [$idParqueo, $idTipoVehiculo]);
     }
 
+    public function buscarPrimerDisponible(int $idParqueo, int $idTipoVehiculo): ?array {
+        $sql = "SELECT TOP 1 * FROM [ESPACIOS] 
+                WHERE id_parqueo = ? AND id_tipo_vehiculo = ? AND estado = 'Disponible' 
+                ORDER BY codigo_espacio";
+        return $this->queryOne($sql, [$idParqueo, $idTipoVehiculo]);
+    }
+
+    public function findById(int $idEspacio): ?array {
+        $sql = "SELECT e.*, tv.nombre_tipo, p.nombre_parqueo, p.direccion 
+                FROM ([ESPACIOS] e 
+                INNER JOIN [TIPOS_VEHICULO] tv ON e.id_tipo_vehiculo = tv.id_tipo_vehiculo)
+                INNER JOIN [PARQUEOS] p ON e.id_parqueo = p.id_parqueo 
+                WHERE e.id_espacio = ?";
+        return $this->queryOne($sql, [$idEspacio]);
+    }
+
     public function actualizarEstado(int $idEspacio, string $nuevoEstado): bool {
         $sql = "UPDATE [ESPACIOS] SET estado = ? WHERE id_espacio = ?";
         return $this->execute($sql, [$nuevoEstado, $idEspacio]);

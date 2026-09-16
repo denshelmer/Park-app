@@ -37,7 +37,9 @@ $router->get('logout', 'AuthController@logout');
 // ==========================================
 $router->get('disponibilidad', 'ConductorController@disponibilidad');
 $router->get('reservar', 'ConductorController@reservar');
+$router->post('reservar', 'ConductorController@procesarReserva');
 $router->get('mis-reservas', 'ConductorController@misReservas');
+$router->post('reserva/cancelar', 'ConductorController@cancelarReserva');
 $router->get('reserva/qr', 'ConductorController@verQR');
 
 // ==========================================
