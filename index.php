@@ -48,8 +48,11 @@ $router->get('api/espacios', 'ConductorController@apiEspacios');
 // ==========================================
 $router->get('caseta', 'OperadorController@caseta');
 $router->get('caseta/ingreso', 'OperadorController@ingreso');
+$router->post('caseta/ingreso', 'OperadorController@procesarIngreso');
 $router->get('caseta/salida', 'OperadorController@salidaCobro');
+$router->post('caseta/salida', 'OperadorController@procesarSalidaCobro');
 $router->get('caseta/ticket', 'OperadorController@ticketPrint');
+$router->get('caseta/recibo', 'OperadorController@reciboPrint');
 
 // ==========================================
 // SECCIÓN 3: PANEL ADMINISTRATIVO Y REPORTES

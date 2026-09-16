@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">
+  <rect width="300" height="300" fill="#ffffff" rx="16"/>
+  <!-- Marco corporativo -->
+  <rect x="10" y="10" width="280" height="280" fill="none" stroke="#1e3a5f" stroke-width="4" rx="12"/>
+  
+  <!-- Patrones de esquina (Finder patterns) -->
+  <!-- Superior Izquierda -->
+  <rect x="30" y="30" width="60" height="60" fill="#1e3a5f" rx="6"/>
+  <rect x="42" y="42" width="36" height="36" fill="#ffffff" rx="2"/>
+  <rect x="50" y="50" width="20" height="20" fill="#c89234" rx="2"/>
+  
+  <!-- Superior Derecha -->
+  <rect x="210" y="30" width="60" height="60" fill="#1e3a5f" rx="6"/>
+  <rect x="222" y="42" width="36" height="36" fill="#ffffff" rx="2"/>
+  <rect x="230" y="50" width="20" height="20" fill="#c89234" rx="2"/>
+  
+  <!-- Inferior Izquierda -->
+  <rect x="30" y="210" width="60" height="60" fill="#1e3a5f" rx="6"/>
+  <rect x="42" y="222" width="36" height="36" fill="#ffffff" rx="2"/>
+  <rect x="50" y="230" width="20" height="20" fill="#c89234" rx="2"/>
+
+  <!-- Matriz de puntos simulando código QR bancario -->
+  <g fill="#1e3a5f">
+    <!-- Fila 1 y 2 -->
+    <rect x="105" y="30" width="12" height="12"/>
+    <rect x="135" y="30" width="12" height="12"/>
+    <rect x="165" y="30" width="12" height="12"/>
+    <rect x="180" y="30" width="12" height="12"/>
+    
+    <rect x="105" y="45" width="12" height="12"/>
+    <rect x="120" y="45" width="12" height="12"/>
+    <rect x="150" y="45" width="12" height="12"/>
+    <rect x="180" y="45" width="12" height="12"/>
+
+    <rect x="105" y="60" width="12" height="12"/>
+    <rect x="135" y="60" width="12" height="12"/>
+    <rect x="165" y="60" width="12" height="12"/>
+
+    <rect x="120" y="75" width="12" height="12"/>
+    <rect x="150" y="75" width="12" height="12"/>
+    <rect x="180" y="75" width="12" height="12"/>
+
+    <!-- Secciones intermedias -->
+    <rect x="30" y="105" width="12" height="12"/>
+    <rect x="60" y="105" width="12" height="12"/>
+    <rect x="75" y="105" width="12" height="12"/>
+    <rect x="105" y="105" width="12" height="12"/>
+    <rect x="135" y="105" width="12" height="12"/>
+    <rect x="180" y="105" width="12" height="12"/>
+    <rect x="210" y="105" width="12" height="12"/>
+    <rect x="240" y="105" width="12" height="12"/>
+    <rect x="255" y="105" width="12" height="12"/>
+
+    <rect x="45" y="120" width="12" height="12"/>
+    <rect x="90" y="120" width="12" height="12"/>
+    <rect x="165" y="120" width="12" height="12"/>
+    <rect x="195" y="120" width="12" height="12"/>
+    <rect x="225" y="120" width="12" height="12"/>
+
+    <!-- Centro decorativo de cuenta institucional -->
+    <rect x="110" y="110" width="80" height="80" fill="#ffffff" stroke="#c89234" stroke-width="3" rx="8"/>
+    <circle cx="150" cy="150" r="28" fill="#1e3a5f"/>
+    <text x="150" y="156" fill="#c89234" font-size="20" font-family="Arial, sans-serif" font-weight="bold" text-anchor="middle">P</text>
+    <text x="150" y="180" fill="#1e3a5f" font-size="8" font-family="Arial, sans-serif" font-weight="bold" text-anchor="middle">PARKAPP</text>
+
+    <rect x="30" y="165" width="12" height="12"/>
+    <rect x="60" y="165" width="12" height="12"/>
+    <rect x="75" y="165" width="12" height="12"/>
+    <rect x="210" y="165" width="12" height="12"/>
+    <rect x="240" y="165" width="12" height="12"/>
+
+    <rect x="45" y="180" width="12" height="12"/>
+    <rect x="75" y="180" width="12" height="12"/>
+    <rect x="195" y="180" width="12" height="12"/>
+    <rect x="225" y="180" width="12" height="12"/>
+    <rect x="255" y="180" width="12" height="12"/>
+
+    <!-- Secciones inferiores -->
+    <rect x="105" y="210" width="12" height="12"/>
+    <rect x="135" y="210" width="12" height="12"/>
+    <rect x="165" y="210" width="12" height="12"/>
+    <rect x="195" y="210" width="12" height="12"/>
+    <rect x="225" y="210" width="12" height="12"/>
+    <rect x="255" y="210" width="12" height="12"/>
+
+    <rect x="120" y="225" width="12" height="12"/>
+    <rect x="150" y="225" width="12" height="12"/>
+    <rect x="180" y="225" width="12" height="12"/>
+    <rect x="210" y="225" width="12" height="12"/>
+    <rect x="240" y="225" width="12" height="12"/>
+
+    <rect x="105" y="240" width="12" height="12"/>
+    <rect x="135" y="240" width="12" height="12"/>
+    <rect x="165" y="240" width="12" height="12"/>
+    <rect x="225" y="240" width="12" height="12"/>
+    <rect x="255" y="240" width="12" height="12"/>
+
+    <rect x="120" y="255" width="12" height="12"/>
+    <rect x="150" y="255" width="12" height="12"/>
+    <rect x="180" y="255" width="12" height="12"/>
+    <rect x="210" y="255" width="12" height="12"/>
+    <rect x="240" y="255" width="12" height="12"/>
+  </g>
+</svg>

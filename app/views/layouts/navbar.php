@@ -21,6 +21,11 @@ $userName = Auth::user()['nombre_completo'] ?? '';
                 </li>
                 <?php if ($isAuth && $rol === 3): ?>
                     <li class="nav-item">
+                        <a class="nav-link" href="<?= BASE_URL ?>/reservar">
+                            <i class="bi bi-plus-circle me-1"></i>Reservar Espacio
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>/mis-reservas">
                             <i class="bi bi-calendar-check me-1"></i>Mis Reservas
                         </a>

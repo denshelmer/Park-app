@@ -25,7 +25,16 @@ class Reserva extends Model {
                 INNER JOIN [PARQUEOS] p ON e.id_parqueo = p.id_parqueo 
                 WHERE r.id_usuario = ? 
                 ORDER BY r.fecha_hora_reserva DESC";
-        return $this->query($sql, [$idUsuario]);
+    }
+
+    public function getActivasPorParqueo(int $idParqueo): array {
+        $sql = "SELECT r.*, e.codigo_espacio, e.piso_sector, u.nombre_completo as conductor
+                FROM (([RESERVAS] r
+                INNER JOIN [ESPACIOS] e ON r.id_espacio = e.id_espacio)
+                LEFT JOIN [USUARIOS] u ON r.id_usuario = u.id_usuario)
+                WHERE e.id_parqueo = ? AND r.estado_reserva = 'Confirmada'
+                ORDER BY r.fecha_hora_prevista_llegada ASC";
+        return $this->query($sql, [$idParqueo]);
     }
 
     public function buscarPorIdYUsuario(int $idReserva, int $idUsuario): ?array {
