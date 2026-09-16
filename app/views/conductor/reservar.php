@@ -36,11 +36,18 @@
                             <label class="form-label fw-semibold small text-uppercase" style="letter-spacing: 0.5px;">Establecimiento / Parqueo</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-building"></i></span>
-                                <select class="form-select" name="id_parqueo" required>
+                                <select class="form-select" name="id_parqueo" id="select_parqueo" required>
                                     <option value="">Seleccione un parqueo...</option>
                                     <?php foreach ($parqueos as $parq): ?>
-                                        <option value="<?= $parq['id_parqueo'] ?>" <?= ((int)$parqueoSeleccionado === (int)$parq['id_parqueo']) ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($parq['nombre_parqueo']) ?> (<?= htmlspecialchars($parq['zona']) ?>)
+                                        <?php 
+                                            $apertura = !empty($parq['hora_apertura']) ? date('H:i', strtotime($parq['hora_apertura'])) : '06:00';
+                                            $cierre = !empty($parq['hora_cierre']) ? date('H:i', strtotime($parq['hora_cierre'])) : '23:00';
+                                        ?>
+                                        <option value="<?= $parq['id_parqueo'] ?>" 
+                                                data-apertura="<?= $apertura ?>" 
+                                                data-cierre="<?= $cierre ?>"
+                                                <?= ((int)$parqueoSeleccionado === (int)$parq['id_parqueo']) ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($parq['nombre_parqueo']) ?> (<?= htmlspecialchars($parq['zona']) ?>) - Horario: <?= $apertura ?> a <?= $cierre ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -52,7 +59,7 @@
                             <label class="form-label fw-semibold small text-uppercase" style="letter-spacing: 0.5px;">Tipo de Vehículo</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-car-front"></i></span>
-                                <select class="form-select" name="id_tipo_vehiculo" required>
+                                <select class="form-select" name="id_tipo_vehiculo" id="select_tipo_vehiculo" required>
                                     <option value="">Seleccione el tipo...</option>
                                     <?php foreach ($tiposVehiculo as $tv): ?>
                                         <option value="<?= $tv['id_tipo_vehiculo'] ?>">
@@ -68,22 +75,29 @@
                             <label class="form-label fw-semibold small text-uppercase" style="letter-spacing: 0.5px;">Placa del Vehículo</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-credit-card-2-front"></i></span>
-                                <input type="text" class="form-control text-uppercase fw-bold" name="placa" 
-                                       placeholder="Ej. 4829-ABC" pattern="[0-9A-Za-z\s\-]{5,10}" maxlength="10"
-                                       title="Ingrese una placa vehicular válida (ej. 4829-ABC o 1234XYZ)" required>
+                                <input type="text" class="form-control text-uppercase fw-bold" name="placa" id="input_placa"
+                                       placeholder="Ej. 4829-ABC" maxlength="8" autocomplete="off"
+                                       title="Ingrese una placa boliviana válida (ej. 4829-ABC o 123-XYZ)" required>
+                                <span class="input-group-text bg-white" id="placa_feedback_icon">
+                                    <i class="bi bi-dash-circle text-muted"></i>
+                                </span>
                             </div>
-                            <div class="form-text text-muted small">Formato estándar boliviano (ej: 4829-ABC).</div>
+                            <div class="form-text small" id="placa_helper_text">Formato boliviano: 3 o 4 dígitos seguidos de guión y 3 letras (ej. 4829-ABC).</div>
                         </div>
 
-                        <!-- Fecha y Hora Prevista -->
+                        <!-- Fecha y Hora Prevista de Llegada -->
                         <div class="col-md-6">
                             <label class="form-label fw-semibold small text-uppercase" style="letter-spacing: 0.5px;">Hora Estimada de Llegada</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-clock"></i></span>
-                                <input type="datetime-local" class="form-control" name="fecha_hora_prevista_llegada" 
-                                       min="<?= date('Y-m-d\TH:i') ?>" required>
+                                <input type="datetime-local" class="form-control" name="fecha_hora_prevista_llegada" id="input_fecha_hora"
+                                       value="<?= date('Y-m-d\TH:i', strtotime('+5 minutes')) ?>"
+                                       min="<?= date('Y-m-d\TH:i') ?>"
+                                       max="<?= date('Y-m-d\TH:i', strtotime('+48 hours')) ?>" required>
                             </div>
-                            <div class="form-text text-muted small">Hora a la que planea ingresar al parqueo.</div>
+                            <div class="form-text text-muted small">
+                                <i class="bi bi-calendar-check text-success me-1"></i>Válido para <strong>hoy</strong> o hasta 48 hrs. Dispone de <strong>15 min de tolerancia</strong> tras esta hora.
+                            </div>
                         </div>
                     </div>
 
@@ -599,8 +613,96 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
+    // -------------------------------------------------------------
+    // FORMATEO Y VALIDACIÓN EN TIEMPO REAL DE PLACA BOLIVIANA
+    // -------------------------------------------------------------
+    const inputPlaca = document.getElementById('input_placa');
+    const placaFeedback = document.getElementById('placa_feedback_icon');
+    const placaHelper = document.getElementById('placa_helper_text');
+
+    if (inputPlaca) {
+        inputPlaca.addEventListener('input', function() {
+            let val = this.value.toUpperCase().replace(/[^0-9A-Z]/g, '');
+            // Formatear automáticamente con guión: 3 o 4 dígitos + guión + letras
+            if (val.length > 3) {
+                if (/^[0-9]{4}/.test(val)) {
+                    val = val.substring(0, 4) + (val.length > 4 ? '-' + val.substring(4, 7) : '');
+                } else if (/^[0-9]{3}/.test(val)) {
+                    val = val.substring(0, 3) + (val.length > 3 ? '-' + val.substring(3, 6) : '');
+                }
+            }
+            this.value = val;
+
+            const esValida = /^[0-9]{3,4}-[A-Z]{3}$/.test(val);
+            if (esValida) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+                if (placaFeedback) placaFeedback.innerHTML = '<i class="bi bi-check-circle-fill text-success"></i>';
+                if (placaHelper) {
+                    placaHelper.className = 'form-text text-success small';
+                    placaHelper.textContent = 'Placa con formato boliviano válido.';
+                }
+            } else {
+                this.classList.remove('is-valid');
+                if (val.length >= 7) {
+                    this.classList.add('is-invalid');
+                    if (placaFeedback) placaFeedback.innerHTML = '<i class="bi bi-x-circle-fill text-danger"></i>';
+                } else {
+                    this.classList.remove('is-invalid');
+                    if (placaFeedback) placaFeedback.innerHTML = '<i class="bi bi-dash-circle text-muted"></i>';
+                }
+                if (placaHelper) {
+                    placaHelper.className = 'form-text text-muted small';
+                    placaHelper.textContent = 'Formato boliviano: 3 o 4 dígitos seguidos de guión y 3 letras (ej. 4829-ABC).';
+                }
+            }
+        });
+    }
+
+    // -------------------------------------------------------------
+    // VALIDACIÓN ESTRICTA DE FECHA Y HORA (DESDE AHORA HACIA ADELANTE)
+    // -------------------------------------------------------------
+    const inputFechaHora = document.getElementById('input_fecha_hora');
+    if (inputFechaHora) {
+        inputFechaHora.addEventListener('change', function() {
+            const ahora = new Date();
+            // Margen de tolerancia de 3 minutos respecto al reloj del cliente
+            const margenMinimo = new Date(ahora.getTime() - (3 * 60 * 1000));
+            const seleccionada = new Date(this.value);
+
+            if (isNaN(seleccionada.getTime()) || seleccionada < margenMinimo) {
+                alert('La hora estimada de llegada no puede ser anterior al momento actual. Se ha reajustado a la hora actual.');
+                const reajuste = new Date(ahora.getTime() + (5 * 60 * 1000));
+                const year = reajuste.getFullYear();
+                const month = String(reajuste.getMonth() + 1).padStart(2, '0');
+                const day = String(reajuste.getDate()).padStart(2, '0');
+                const hours = String(reajuste.getHours()).padStart(2, '0');
+                const mins = String(reajuste.getMinutes()).padStart(2, '0');
+                this.value = `${year}-${month}-${day}T${hours}:${mins}`;
+            }
+
+            validarHorarioParqueo();
+        });
+    }
+
+    function validarHorarioParqueo() {
+        if (!selectParqueo || !inputFechaHora || !inputFechaHora.value) return;
+        const option = selectParqueo.options[selectParqueo.selectedIndex];
+        if (!option || !option.value) return;
+
+        const apertura = option.getAttribute('data-apertura');
+        const cierre = option.getAttribute('data-cierre');
+        if (!apertura || !cierre) return;
+
+        const timePart = inputFechaHora.value.split('T')[1];
+        if (timePart && (timePart < apertura || timePart > cierre)) {
+            alert(`Atención: El establecimiento seleccionado atiende de ${apertura} a ${cierre}. Su hora estimada de llegada (${timePart}) se encuentra fuera de ese horario.`);
+        }
+    }
+
     selectParqueo.addEventListener('change', function() {
         desmarcarEspacio();
+        validarHorarioParqueo();
         cargarMapaEspacios();
     });
 

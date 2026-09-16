@@ -37,6 +37,18 @@ class Reserva extends Model {
         return $this->queryOne($sql, [$idReserva, $idUsuario]);
     }
 
+    /**
+     * Verifica si el usuario ya tiene una reserva activa (Confirmada o En Parqueo) para una placa dada
+     */
+    public function tieneReservaActivaPlaca(int $idUsuario, string $placa): ?array {
+        $sql = "SELECT TOP 1 r.*, e.codigo_espacio, p.nombre_parqueo 
+                FROM ([RESERVAS] r 
+                INNER JOIN [ESPACIOS] e ON r.id_espacio = e.id_espacio)
+                INNER JOIN [PARQUEOS] p ON e.id_parqueo = p.id_parqueo 
+                WHERE r.id_usuario = ? AND r.placa_vehiculo = ? AND (r.estado_reserva = 'Confirmada' OR r.estado_reserva = 'En Parqueo')";
+        return $this->queryOne($sql, [$idUsuario, $placa]);
+    }
+
     public function crearReserva(array $datos): int|bool {
         $id = $this->getNextId('id_reserva');
         $sql = "INSERT INTO [RESERVAS] (

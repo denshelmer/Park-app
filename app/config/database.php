@@ -4,6 +4,9 @@
  * ParkApp - El Alto
  */
 
+// Configuración de zona horaria oficial (Bolivia UTC-4)
+date_default_timezone_set('America/La_Paz');
+
 // Rutas base
 define('BASE_PATH', dirname(__DIR__, 2));
 define('APP_PATH', BASE_PATH . '/app');

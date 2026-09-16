@@ -74,22 +74,65 @@ class ConductorController extends Controller {
             return;
         }
 
-        // 2. Validar formato de placa vehicular (ej. 4829-ABC o 1234XYZ)
-        if (!preg_match('/^[0-9A-Z\s\-]{5,10}$/', $placa)) {
-            $_SESSION['flash_error'] = 'El formato de placa no es válido (ej. 4829-ABC).';
+        // 2. Normalizar y validar placa vehicular boliviana (ej. 4829-ABC o 123-XYZ)
+        $placaLimpia = preg_replace('/[^0-9A-Z]/', '', $placa);
+        if (preg_match('/^([0-9]{3,4})([A-Z]{3})$/', $placaLimpia, $m)) {
+            $placa = $m[1] . '-' . $m[2];
+        } else {
+            $_SESSION['flash_error'] = 'El formato de placa no es válido. Debe contener 3 o 4 dígitos seguidos de 3 letras (ej. 4829-ABC).';
             $this->redirect("reservar?parqueo={$idParqueo}");
             return;
         }
 
-        // 3. Validar fecha/hora (no en el pasado)
+        // 3. Validar fecha y hora (permitir el mismo día a partir del minuto actual, máximo 48 horas)
+        $ahora = time();
         $timestampLlegada = strtotime($fechaHoraLlegada);
-        if (!$timestampLlegada || $timestampLlegada < (time() - 300)) {
-            $_SESSION['flash_error'] = 'La hora de llegada no puede ser una fecha u hora anterior a la actual.';
+
+        if (!$timestampLlegada) {
+            $_SESSION['flash_error'] = 'Fecha y hora de llegada no válidas.';
             $this->redirect("reservar?parqueo={$idParqueo}");
             return;
         }
 
-        // 4. Determinar espacio: selección manual en el mapa o asignación automática
+        // Margen de gracia de 5 minutos en el pasado para contemplar el llenado del formulario
+        if ($timestampLlegada < ($ahora - 300)) {
+            $_SESSION['flash_error'] = 'No es posible reservar para una fecha u hora anterior a la actual. Por favor elija la hora presente o posterior.';
+            $this->redirect("reservar?parqueo={$idParqueo}");
+            return;
+        }
+
+        // Límite de reserva: máximo 48 horas hacia adelante
+        if ($timestampLlegada > ($ahora + (86400 * 2))) {
+            $_SESSION['flash_error'] = 'Las reservas solo pueden realizarse para el día de hoy o con un máximo de 48 horas de anticipación.';
+            $this->redirect("reservar?parqueo={$idParqueo}");
+            return;
+        }
+
+        // 4. Validar horario de atención del establecimiento
+        $parqueoInfo = $this->parqueoModel->getConDetalle($idParqueo);
+        if ($parqueoInfo) {
+            $horaLlegadaStr = date('H:i:s', $timestampLlegada);
+            $horaAperturaStr = date('H:i:s', strtotime($parqueoInfo['hora_apertura']));
+            $horaCierreStr = date('H:i:s', strtotime($parqueoInfo['hora_cierre']));
+
+            if ($horaLlegadaStr < $horaAperturaStr || $horaLlegadaStr > $horaCierreStr) {
+                $aperturaFmt = date('H:i', strtotime($parqueoInfo['hora_apertura']));
+                $cierreFmt = date('H:i', strtotime($parqueoInfo['hora_cierre']));
+                $_SESSION['flash_error'] = "El establecimiento {$parqueoInfo['nombre_parqueo']} atiende de {$aperturaFmt} a {$cierreFmt}. Su hora prevista de llegada debe encontrarse dentro de ese rango.";
+                $this->redirect("reservar?parqueo={$idParqueo}");
+                return;
+            }
+        }
+
+        // 5. Evitar reservas duplicadas activas para el mismo vehículo
+        $reservaActiva = $this->reservaModel->tieneReservaActivaPlaca((int)Auth::id(), $placa);
+        if ($reservaActiva) {
+            $_SESSION['flash_error'] = "Ya cuenta con una reserva activa para el vehículo con placa {$placa} en {$reservaActiva['nombre_parqueo']} (Espacio {$reservaActiva['codigo_espacio']}). Puede gestionarla en 'Mis Reservas'.";
+            $this->redirect("reservar?parqueo={$idParqueo}");
+            return;
+        }
+
+        // 6. Determinar espacio: selección manual en el mapa o asignación automática
         $idEspacioSeleccionado = (int)($_POST['id_espacio'] ?? 0);
         $espacio = null;
 
