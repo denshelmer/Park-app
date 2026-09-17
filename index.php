@@ -59,9 +59,22 @@ $router->get('caseta/recibo', 'OperadorController@reciboPrint');
 // ==========================================
 $router->get('admin/dashboard', 'AdminController@dashboard');
 $router->get('admin/parqueos', 'AdminController@parqueos');
+$router->post('admin/parqueos/guardar', 'AdminController@guardarParqueo');
+$router->post('admin/parqueos/estado', 'AdminController@cambiarEstadoParqueo');
+
 $router->get('admin/espacios', 'AdminController@espacios');
+$router->post('admin/espacios/guardar', 'AdminController@guardarEspacio');
+$router->post('admin/espacios/estado', 'AdminController@cambiarEstadoEspacio');
+
 $router->get('admin/tarifas', 'AdminController@tarifas');
+$router->post('admin/tarifas/guardar', 'AdminController@guardarTarifa');
+$router->post('admin/tarifas/estado', 'AdminController@cambiarVigenciaTarifa');
+
 $router->get('admin/usuarios', 'AdminController@usuarios');
+$router->post('admin/usuarios/guardar', 'AdminController@guardarUsuario');
+$router->post('admin/usuarios/estado', 'AdminController@cambiarEstadoUsuario');
+$router->post('admin/usuarios/password', 'AdminController@cambiarPasswordUsuario');
+
 $router->get('reportes/ingresos', 'ReporteController@ingresos');
 $router->get('reportes/ocupacion', 'ReporteController@ocupacion');
 

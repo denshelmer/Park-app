@@ -57,4 +57,48 @@ class Usuario extends Model {
         $sql = "UPDATE [USUARIOS] SET password_hash = ? WHERE id_usuario = ?";
         return $this->execute($sql, [$nuevoHash, $idUsuario]);
     }
+
+    /**
+     * Obtiene todos los usuarios con su rol correspondiente
+     */
+    public function getAllConRoles(): array {
+        $sql = "SELECT u.*, r.nombre_rol 
+                FROM [USUARIOS] u 
+                INNER JOIN [ROLES] r ON u.id_rol = r.id_rol 
+                ORDER BY u.id_rol, u.nombre_completo";
+        return $this->query($sql);
+    }
+
+    /**
+     * Actualiza la información personal de un usuario
+     */
+    public function actualizarUsuario(int $id, array $datos): bool {
+        $sql = "UPDATE [USUARIOS] 
+                SET nombre_completo = ?, ci_nit = ?, telefono = ?, email = ?, id_rol = ? 
+                WHERE id_usuario = ?";
+        return $this->execute($sql, [
+            trim($datos['nombre_completo']),
+            trim($datos['ci_nit']),
+            trim($datos['telefono']),
+            trim(strtolower($datos['email'])),
+            (int)$datos['id_rol'],
+            $id
+        ]);
+    }
+
+    /**
+     * Cambia el estado activo/inactivo de un usuario
+     */
+    public function cambiarEstado(int $id, bool $nuevoEstado): bool {
+        $estadoLiteral = $nuevoEstado ? 'True' : 'False';
+        $sql = "UPDATE [USUARIOS] SET estado = {$estadoLiteral} WHERE id_usuario = ?";
+        return $this->execute($sql, [$id]);
+    }
+
+    /**
+     * Obtiene todos los roles disponibles en el sistema
+     */
+    public function getRoles(): array {
+        return $this->query("SELECT * FROM [ROLES] ORDER BY id_rol");
+    }
 }

@@ -112,4 +112,94 @@ class Tarifa extends Model {
             'desglose' => $detalleTexto
         ];
     }
+
+    /**
+     * Obtiene todas las tarifas con nombres de parqueo y tipo de vehículo
+     */
+    public function getAllConDetalle(): array {
+        $sql = "SELECT t.*, p.nombre_parqueo, p.zona, tv.nombre_tipo 
+                FROM ([TARIFAS] t 
+                INNER JOIN [PARQUEOS] p ON t.id_parqueo = p.id_parqueo)
+                INNER JOIN [TIPOS_VEHICULO] tv ON t.id_tipo_vehiculo = tv.id_tipo_vehiculo 
+                ORDER BY p.nombre_parqueo, tv.id_tipo_vehiculo, t.id_tarifa DESC";
+        return $this->query($sql);
+    }
+
+    /**
+     * Registra una nueva tarifa
+     */
+    public function crearTarifa(array $datos): int|bool {
+        $id = $this->getNextId('id_tarifa');
+        $idParqueo = (int)$datos['id_parqueo'];
+        $idTipoVehiculo = (int)$datos['id_tipo_vehiculo'];
+        $vigente = !empty($datos['vigente']) ? true : false;
+
+        if ($vigente) {
+            $this->execute("UPDATE [TARIFAS] SET vigente = False WHERE id_parqueo = ? AND id_tipo_vehiculo = ?", [$idParqueo, $idTipoVehiculo]);
+        }
+
+        $vigenteLiteral = $vigente ? 'True' : 'False';
+        $sql = "INSERT INTO [TARIFAS] (
+                    id_tarifa, id_parqueo, id_tipo_vehiculo, 
+                    precio_hora, precio_fraccion, precio_dia, 
+                    tolerancia_minutos, vigente
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, {$vigenteLiteral})";
+
+        $ok = $this->execute($sql, [
+            $id,
+            $idParqueo,
+            $idTipoVehiculo,
+            (float)$datos['precio_hora'],
+            (float)$datos['precio_fraccion'],
+            (float)$datos['precio_dia'],
+            (int)($datos['tolerancia_minutos'] ?? 10)
+        ]);
+
+        return $ok ? $id : false;
+    }
+
+    /**
+     * Actualiza los valores de una tarifa existente
+     */
+    public function actualizarTarifa(int $id, array $datos): bool {
+        $sql = "UPDATE [TARIFAS] 
+                SET precio_hora = ?, precio_fraccion = ?, precio_dia = ?, tolerancia_minutos = ? 
+                WHERE id_tarifa = ?";
+        return $this->execute($sql, [
+            (float)$datos['precio_hora'],
+            (float)$datos['precio_fraccion'],
+            (float)$datos['precio_dia'],
+            (int)$datos['tolerancia_minutos'],
+            $id
+        ]);
+    }
+
+    /**
+     * Busca una tarifa por su ID
+     */
+    public function findById(int $idTarifa): ?array {
+        $sql = "SELECT * FROM [TARIFAS] WHERE id_tarifa = ?";
+        return $this->queryOne($sql, [$idTarifa]);
+    }
+
+    /**
+     * Cambia la vigencia de una tarifa garantizando solo una tarifa activa por parqueo y tipo
+     */
+    public function cambiarVigencia(int $id, bool $vigente, ?int $idParqueo = null, ?int $idTipoVehiculo = null): bool {
+        if ($vigente) {
+            if ($idParqueo === null || $idTipoVehiculo === null) {
+                $actual = $this->findById($id);
+                if ($actual) {
+                    $idParqueo = (int)$actual['id_parqueo'];
+                    $idTipoVehiculo = (int)$actual['id_tipo_vehiculo'];
+                }
+            }
+            if ($idParqueo && $idTipoVehiculo) {
+                $this->execute("UPDATE [TARIFAS] SET vigente = False WHERE id_parqueo = ? AND id_tipo_vehiculo = ?", [$idParqueo, $idTipoVehiculo]);
+            }
+        }
+        $vigenteLiteral = $vigente ? 'True' : 'False';
+        $sql = "UPDATE [TARIFAS] SET vigente = {$vigenteLiteral} WHERE id_tarifa = ?";
+        return $this->execute($sql, [$id]);
+    }
 }

@@ -124,4 +124,97 @@ class IngresoSalida extends Model {
                 WHERE i.id_ingreso_salida = ?";
         return $this->queryOne($sql, [$idIngresoSalida]);
     }
+
+    /**
+     * Obtiene los movimientos (ingresos y salidas) de hoy
+     */
+    public function getMovimientosHoy(?int $idParqueo = null): array {
+        $inicioHoy = date('Y-m-d 00:00:00');
+        $finHoy = date('Y-m-d 23:59:59');
+        $params = [$inicioHoy, $finHoy];
+
+        $sql = "SELECT i.*, e.codigo_espacio, e.piso_sector, p.nombre_parqueo, tv.nombre_tipo,
+                       ue.nombre_completo AS operador_entrada,
+                       us.nombre_completo AS operador_salida
+                FROM (((([INGRESOS_SALIDAS] i 
+                INNER JOIN [ESPACIOS] e ON i.id_espacio = e.id_espacio)
+                INNER JOIN [PARQUEOS] p ON e.id_parqueo = p.id_parqueo)
+                INNER JOIN [TIPOS_VEHICULO] tv ON e.id_tipo_vehiculo = tv.id_tipo_vehiculo)
+                LEFT JOIN [USUARIOS] ue ON i.id_operador_entrada = ue.id_usuario)
+                LEFT JOIN [USUARIOS] us ON i.id_operador_salida = us.id_usuario 
+                WHERE (i.fecha_hora_entrada >= ? AND i.fecha_hora_entrada <= ?)";
+
+        if ($idParqueo !== null && $idParqueo > 0) {
+            $sql .= " AND e.id_parqueo = ?";
+            $params[] = $idParqueo;
+        }
+
+        $sql .= " ORDER BY i.fecha_hora_entrada DESC";
+        return $this->query($sql, $params);
+    }
+
+    /**
+     * Obtiene estadísticas de ocupación y rotación en un rango de fechas
+     */
+    public function getEstadisticasOcupacion(?string $fechaInicio = null, ?string $fechaFin = null, ?int $idParqueo = null): array {
+        $fechaInicio = $fechaInicio ? date('Y-m-d 00:00:00', strtotime($fechaInicio)) : date('Y-m-01 00:00:00');
+        $fechaFin = $fechaFin ? date('Y-m-d 23:59:59', strtotime($fechaFin)) : date('Y-m-d 23:59:59');
+        
+        $params = [$fechaInicio, $fechaFin];
+        $filtroParqueo = "";
+        if ($idParqueo !== null && $idParqueo > 0) {
+            $filtroParqueo = " AND e.id_parqueo = ?";
+            $params[] = $idParqueo;
+        }
+
+        $sql = "SELECT i.*, e.codigo_espacio, e.piso_sector, e.id_parqueo, p.nombre_parqueo, tv.nombre_tipo
+                FROM (([INGRESOS_SALIDAS] i 
+                INNER JOIN [ESPACIOS] e ON i.id_espacio = e.id_espacio)
+                INNER JOIN [PARQUEOS] p ON e.id_parqueo = p.id_parqueo)
+                INNER JOIN [TIPOS_VEHICULO] tv ON e.id_tipo_vehiculo = tv.id_tipo_vehiculo
+                WHERE i.fecha_hora_entrada >= ? AND i.fecha_hora_entrada <= ?" . $filtroParqueo . "
+                ORDER BY i.fecha_hora_entrada DESC";
+
+        $movimientos = $this->query($sql, $params);
+
+        // Agregaciones en PHP para máxima compatibilidad con Access SQL
+        $totalIngresos = count($movimientos);
+        $totalFinalizados = 0;
+        $totalMinutos = 0;
+        $porTipoVehiculo = [];
+        $porHora = array_fill(0, 24, 0);
+
+        foreach ($movimientos as $m) {
+            $tipo = $m['nombre_tipo'] ?? 'Desconocido';
+            if (!isset($porTipoVehiculo[$tipo])) {
+                $porTipoVehiculo[$tipo] = 0;
+            }
+            $porTipoVehiculo[$tipo]++;
+
+            if (!empty($m['fecha_hora_entrada'])) {
+                $hora = (int)date('H', strtotime($m['fecha_hora_entrada']));
+                if ($hora >= 0 && $hora < 24) {
+                    $porHora[$hora]++;
+                }
+            }
+
+            if ($m['estado_estancia'] === 'Finalizado') {
+                $totalFinalizados++;
+                $totalMinutos += (int)($m['minutos_totales'] ?? 0);
+            }
+        }
+
+        $promedioMinutos = $totalFinalizados > 0 ? round($totalMinutos / $totalFinalizados) : 0;
+
+        return [
+            'total_ingresos' => $totalIngresos,
+            'total_finalizados' => $totalFinalizados,
+            'en_parqueo' => $totalIngresos - $totalFinalizados,
+            'promedio_minutos' => $promedioMinutos,
+            'promedio_horas' => round($promedioMinutos / 60, 1),
+            'por_tipo_vehiculo' => $porTipoVehiculo,
+            'por_hora' => $porHora,
+            'movimientos' => $movimientos
+        ];
+    }
 }

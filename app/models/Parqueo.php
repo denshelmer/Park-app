@@ -13,6 +13,10 @@ class Parqueo extends Model {
         return $this->query($sql);
     }
 
+    public function getAllActivos(): array {
+        return $this->getActivos();
+    }
+
     public function getConDetalle(int $idParqueo): ?array {
         $sql = "SELECT * FROM [PARQUEOS] WHERE id_parqueo = ?";
         return $this->queryOne($sql, [$idParqueo]);
@@ -77,5 +81,65 @@ class Parqueo extends Model {
         unset($parqueo);
 
         return $parqueos;
+    }
+
+    /**
+     * Obtiene todos los parqueos (activos e inactivos) para la administración
+     */
+    public function getAll(): array {
+        $sql = "SELECT * FROM [PARQUEOS] ORDER BY id_parqueo";
+        return $this->query($sql);
+    }
+
+    /**
+     * Registra un nuevo parqueo
+     */
+    public function crearParqueo(array $datos): int|bool {
+        $id = $this->getNextId('id_parqueo');
+        $sql = "INSERT INTO [PARQUEOS] (
+                    id_parqueo, nombre_parqueo, direccion, zona, 
+                    capacidad_total, hora_apertura, hora_cierre, estado
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, True)";
+
+        $ok = $this->execute($sql, [
+            $id,
+            trim($datos['nombre_parqueo']),
+            trim($datos['direccion']),
+            trim($datos['zona']),
+            (int)($datos['capacidad_total'] ?? 20),
+            $datos['hora_apertura'] ?? '06:00',
+            $datos['hora_cierre'] ?? '23:00'
+        ]);
+
+        return $ok ? $id : false;
+    }
+
+    /**
+     * Actualiza los datos de un parqueo existente
+     */
+    public function actualizarParqueo(int $id, array $datos): bool {
+        $sql = "UPDATE [PARQUEOS] 
+                SET nombre_parqueo = ?, direccion = ?, zona = ?, 
+                    capacidad_total = ?, hora_apertura = ?, hora_cierre = ? 
+                WHERE id_parqueo = ?";
+
+        return $this->execute($sql, [
+            trim($datos['nombre_parqueo']),
+            trim($datos['direccion']),
+            trim($datos['zona']),
+            (int)$datos['capacidad_total'],
+            $datos['hora_apertura'],
+            $datos['hora_cierre'],
+            $id
+        ]);
+    }
+
+    /**
+     * Cambia el estado activo/inactivo de un parqueo
+     */
+    public function cambiarEstado(int $id, bool $nuevoEstado): bool {
+        $estadoLiteral = $nuevoEstado ? 'True' : 'False';
+        $sql = "UPDATE [PARQUEOS] SET estado = {$estadoLiteral} WHERE id_parqueo = ?";
+        return $this->execute($sql, [$id]);
     }
 }

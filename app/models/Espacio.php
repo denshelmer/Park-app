@@ -56,4 +56,74 @@ class Espacio extends Model {
         $sql = "UPDATE [ESPACIOS] SET estado = ? WHERE id_espacio = ?";
         return $this->execute($sql, [$nuevoEstado, $idEspacio]);
     }
+
+    /**
+     * Registra un nuevo cajón/espacio en el parqueo
+     */
+    public function crearEspacio(array $datos): int|bool {
+        $id = $this->getNextId('id_espacio');
+        $sql = "INSERT INTO [ESPACIOS] (
+                    id_espacio, id_parqueo, id_tipo_vehiculo, 
+                    codigo_espacio, piso_sector, estado
+                ) VALUES (?, ?, ?, ?, ?, ?)";
+
+        $ok = $this->execute($sql, [
+            $id,
+            (int)$datos['id_parqueo'],
+            (int)$datos['id_tipo_vehiculo'],
+            trim(strtoupper($datos['codigo_espacio'])),
+            trim($datos['piso_sector']),
+            $datos['estado'] ?? 'Disponible'
+        ]);
+
+        return $ok ? $id : false;
+    }
+
+    /**
+     * Verifica si ya existe un código de espacio registrado en el mismo parqueo
+     */
+    public function codigoExisteEnParqueo(int $idParqueo, string $codigo, int $excludeId = 0): bool {
+        $sql = "SELECT COUNT(*) AS total FROM [ESPACIOS] 
+                WHERE id_parqueo = ? AND codigo_espacio = ? AND id_espacio <> ?";
+        $res = $this->queryOne($sql, [$idParqueo, trim(strtoupper($codigo)), $excludeId]);
+        return ($res && (int)$res['total'] > 0);
+    }
+
+    /**
+     * Actualiza la información de un espacio
+     */
+    public function actualizarEspacio(int $id, array $datos): bool {
+        $sql = "UPDATE [ESPACIOS] 
+                SET id_tipo_vehiculo = ?, codigo_espacio = ?, piso_sector = ?, estado = ? 
+                WHERE id_espacio = ?";
+        return $this->execute($sql, [
+            (int)$datos['id_tipo_vehiculo'],
+            trim(strtoupper($datos['codigo_espacio'])),
+            trim($datos['piso_sector']),
+            $datos['estado'],
+            $id
+        ]);
+    }
+
+    /**
+     * Obtiene el conteo de espacios agrupados por estado para un parqueo
+     */
+    public function getConteoPorEstado(int $idParqueo = 0): array {
+        $espacios = $idParqueo > 0 ? $this->getPorParqueo($idParqueo) : $this->query("SELECT * FROM [ESPACIOS]");
+        $conteos = [
+            'total' => count($espacios),
+            'disponibles' => 0,
+            'ocupados' => 0,
+            'reservados' => 0,
+            'mantenimiento' => 0
+        ];
+        foreach ($espacios as $e) {
+            $estado = strtolower(trim($e['estado']));
+            if ($estado === 'disponible') $conteos['disponibles']++;
+            elseif ($estado === 'ocupado') $conteos['ocupados']++;
+            elseif ($estado === 'reservado') $conteos['reservados']++;
+            elseif ($estado === 'mantenimiento') $conteos['mantenimiento']++;
+        }
+        return $conteos;
+    }
 }
