@@ -25,6 +25,7 @@ class Reserva extends Model {
                 INNER JOIN [PARQUEOS] p ON e.id_parqueo = p.id_parqueo 
                 WHERE r.id_usuario = ? 
                 ORDER BY r.fecha_hora_reserva DESC";
+        return $this->query($sql, [$idUsuario]);
     }
 
     public function getActivasPorParqueo(int $idParqueo): array {

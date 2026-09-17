@@ -79,7 +79,7 @@ class IngresoSalida extends Model {
         $sql = "INSERT INTO [INGRESOS_SALIDAS] (
                     id_ingreso_salida, numero_ticket, id_reserva, id_espacio, 
                     id_operador_entrada, placa, fecha_hora_entrada, estado_estancia
-                ) VALUES (?, ?, ?, ?, ?, Now(), 'En Parqueo')";
+                ) VALUES (?, ?, ?, ?, ?, ?, Now(), 'En Parqueo')";
 
         $ok = $this->execute($sql, [
             $id,
