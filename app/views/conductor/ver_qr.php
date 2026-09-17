@@ -15,24 +15,58 @@ $estado = $reserva['estado_reserva'] ?? 'Confirmada';
         <!-- Tarjeta Formal de Comprobante QR -->
         <div class="card formal-card p-4 p-md-5 text-center shadow-sm">
             <div class="mb-3">
-                <span class="badge px-3 py-2 fs-6 <?= $estado === 'Confirmada' ? 'bg-success' : ($estado === 'Cancelada' ? 'bg-secondary' : 'bg-primary') ?>">
-                    <i class="bi bi-check2-circle me-1"></i>Reserva <?= htmlspecialchars($estado) ?>
-                </span>
+                <?php if ($estado === 'Confirmada'): ?>
+                    <span class="badge px-3 py-2 fs-6 bg-success">
+                        <i class="bi bi-check2-circle me-1"></i>Reserva Confirmada
+                    </span>
+                <?php elseif ($estado === 'En Parqueo'): ?>
+                    <span class="badge px-3 py-2 fs-6 bg-primary">
+                        <i class="bi bi-p-square me-1"></i>Vehículo en Parqueo
+                    </span>
+                <?php elseif ($estado === 'Cancelada'): ?>
+                    <span class="badge px-3 py-2 fs-6 bg-danger">
+                        <i class="bi bi-x-circle me-1"></i>Reserva Cancelada / Expirada
+                    </span>
+                <?php else: ?>
+                    <span class="badge px-3 py-2 fs-6 bg-secondary">
+                        <i class="bi bi-info-circle me-1"></i><?= htmlspecialchars($estado) ?>
+                    </span>
+                <?php endif; ?>
             </div>
+
+            <?php if ($estado === 'Cancelada'): ?>
+                <div class="alert alert-danger text-start small shadow-sm mb-4" role="alert">
+                    <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                    <strong>Pase Inactivo:</strong> Esta reserva fue cancelada o superó los 15 minutos de tolerancia. El espacio asignado ha sido liberado y este código QR no es válido para ingreso en caseta.
+                </div>
+            <?php endif; ?>
 
             <h4 class="fw-bold mb-1" style="color: var(--park-primary);">Comprobante Oficial de Ingreso</h4>
             <p class="text-muted small mb-4">Presente este código QR digital o impreso al operador en la caseta del parqueo</p>
 
             <!-- Generación de Código QR Real -->
-            <div class="p-3 bg-white border rounded d-inline-block shadow-sm mb-3">
+            <div class="p-3 bg-white border rounded d-inline-block shadow-sm mb-3 position-relative">
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=210x210&data=<?= urlencode($token) ?>" 
-                     alt="Código QR Reserva <?= htmlspecialchars($token) ?>" class="img-fluid rounded" style="width: 210px; height: 210px;">
+                     alt="Código QR Reserva <?= htmlspecialchars($token) ?>" 
+                     class="img-fluid rounded" 
+                     style="width: 210px; height: 210px; <?= $estado === 'Cancelada' ? 'opacity: 0.35; filter: grayscale(100%);' : '' ?>">
+                <?php if ($estado === 'Cancelada'): ?>
+                    <div class="position-absolute top-50 start-50 translate-middle badge bg-danger fs-6 px-3 py-2 shadow">
+                        <i class="bi bi-x-circle me-1"></i>INVÁLIDO
+                    </div>
+                <?php endif; ?>
             </div>
 
             <div class="mb-4">
                 <h5 class="fw-bold font-monospace mb-1" style="color: var(--park-primary); letter-spacing: 1px;"><?= htmlspecialchars($token) ?></h5>
                 <small class="text-muted"><i class="bi bi-shield-check me-1 text-success"></i>Código de validación en tiempo real</small>
             </div>
+
+            <?php 
+            $toleranciaMin = (int)($reserva['minutos_tolerancia'] ?? 15);
+            $tiempoLlegada = !empty($reserva['fecha_hora_prevista_llegada']) ? strtotime($reserva['fecha_hora_prevista_llegada']) : 0;
+            $tiempoLimite = $tiempoLlegada + ($toleranciaMin * 60);
+            ?>
 
             <!-- Ficha Técnica de la Reserva -->
             <div class="list-group list-group-flush text-start small mb-4 border rounded">
@@ -60,7 +94,9 @@ $estado = $reserva['estado_reserva'] ?? 'Confirmada';
                 </div>
                 <div class="list-group-item d-flex justify-content-between align-items-center py-2 px-3">
                     <span class="text-muted">Margen de Tolerancia:</span>
-                    <span class="text-danger fw-semibold"><i class="bi bi-stopwatch me-1"></i><?= (int)($reserva['minutos_tolerancia'] ?? 15) ?> minutos</span>
+                    <span class="text-danger fw-semibold">
+                        <i class="bi bi-stopwatch me-1"></i><?= $toleranciaMin ?> minutos (hasta <?= date('H:i', $tiempoLimite) ?>)
+                    </span>
                 </div>
             </div>
 

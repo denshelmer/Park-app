@@ -101,4 +101,66 @@ class Reserva extends Model {
 
         return $actualizado;
     }
+
+    /**
+     * Cancela una reserva por vencimiento de tolerancia y libera el espacio físico
+     */
+    public function cancelarPorTolerancia(int $idReserva): bool {
+        $sql = "SELECT id_reserva, id_espacio, estado_reserva FROM [RESERVAS] WHERE id_reserva = ?";
+        $reserva = $this->queryOne($sql, [$idReserva]);
+        if (!$reserva || $reserva['estado_reserva'] !== 'Confirmada') {
+            return false;
+        }
+
+        // 1. Marcar reserva como Cancelada
+        $sqlUpdate = "UPDATE [RESERVAS] SET estado_reserva = 'Cancelada' WHERE id_reserva = ?";
+        $actualizado = $this->execute($sqlUpdate, [$idReserva]);
+
+        // 2. Liberar el espacio asignado
+        if ($actualizado && !empty($reserva['id_espacio'])) {
+            $sqlEspacio = "UPDATE [ESPACIOS] SET estado = 'Disponible' WHERE id_espacio = ?";
+            $this->execute($sqlEspacio, [(int)$reserva['id_espacio']]);
+        }
+
+        return (bool)$actualizado;
+    }
+
+    /**
+     * Evalúa y libera automáticamente todas las reservas cuya hora prevista + tolerancia ha expirado
+     * @param int|null $idParqueo Opcional, filtra por parqueo
+     * @return int Cantidad de reservas canceladas y cajones liberados
+     */
+    public function liberarReservasVencidas(?int $idParqueo = null): int {
+        $sql = "SELECT r.id_reserva, r.id_espacio, r.fecha_hora_prevista_llegada, r.minutos_tolerancia 
+                FROM [RESERVAS] r 
+                INNER JOIN [ESPACIOS] e ON r.id_espacio = e.id_espacio 
+                WHERE r.estado_reserva = 'Confirmada'";
+        $params = [];
+        if ($idParqueo !== null && $idParqueo > 0) {
+            $sql .= " AND e.id_parqueo = ?";
+            $params[] = $idParqueo;
+        }
+
+        $activas = $this->query($sql, $params);
+        if (empty($activas)) {
+            return 0;
+        }
+
+        $ahora = time();
+        $liberadas = 0;
+
+        foreach ($activas as $res) {
+            $tolerancia = (int)($res['minutos_tolerancia'] ?? 15);
+            $tiempoLlegada = !empty($res['fecha_hora_prevista_llegada']) ? strtotime($res['fecha_hora_prevista_llegada']) : 0;
+
+            // Si la hora de llegada + margen de tolerancia ya pasó, auto-cancelar
+            if ($tiempoLlegada > 0 && ($tiempoLlegada + ($tolerancia * 60)) < $ahora) {
+                if ($this->cancelarPorTolerancia((int)$res['id_reserva'])) {
+                    $liberadas++;
+                }
+            }
+        }
+
+        return $liberadas;
+    }
 }

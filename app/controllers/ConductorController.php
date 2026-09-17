@@ -25,6 +25,7 @@ class ConductorController extends Controller {
     }
 
     public function disponibilidad(): void {
+        $this->reservaModel->liberarReservasVencidas();
         $parqueos = $this->parqueoModel->getConDisponibilidad();
         $error = $_SESSION['flash_error'] ?? null;
         $success = $_SESSION['flash_success'] ?? null;
@@ -41,6 +42,7 @@ class ConductorController extends Controller {
     public function reservar(): void {
         Auth::requireRole([1, 3]); // Admin o Conductor
         
+        $this->reservaModel->liberarReservasVencidas();
         $parqueos = $this->parqueoModel->getActivos();
         $tiposVehiculo = $this->tipoVehiculoModel->getAllActivos();
         $parqueoSeleccionado = isset($_GET['parqueo']) ? (int)$_GET['parqueo'] : 0;
@@ -124,7 +126,8 @@ class ConductorController extends Controller {
             }
         }
 
-        // 5. Evitar reservas duplicadas activas para el mismo vehículo
+        // 5. Evitar reservas duplicadas activas para el mismo vehículo (liberando antes vencidas)
+        $this->reservaModel->liberarReservasVencidas($idParqueo);
         $reservaActiva = $this->reservaModel->tieneReservaActivaPlaca((int)Auth::id(), $placa);
         if ($reservaActiva) {
             $_SESSION['flash_error'] = "Ya cuenta con una reserva activa para el vehículo con placa {$placa} en {$reservaActiva['nombre_parqueo']} (Espacio {$reservaActiva['codigo_espacio']}). Puede gestionarla en 'Mis Reservas'.";
@@ -192,6 +195,7 @@ class ConductorController extends Controller {
     public function misReservas(): void {
         Auth::requireRole([1, 3]);
 
+        $this->reservaModel->liberarReservasVencidas();
         $reservas = $this->reservaModel->getActivasPorUsuario((int)Auth::id());
         $error = $_SESSION['flash_error'] ?? null;
         $success = $_SESSION['flash_success'] ?? null;
@@ -228,6 +232,7 @@ class ConductorController extends Controller {
     public function verQR(): void {
         Auth::requireRole([1, 3]);
 
+        $this->reservaModel->liberarReservasVencidas();
         $token = trim($_GET['token'] ?? '');
         if (empty($token)) {
             $this->redirect('mis-reservas');
@@ -273,6 +278,7 @@ class ConductorController extends Controller {
             exit;
         }
 
+        $this->reservaModel->liberarReservasVencidas($idParqueo);
         $espacios = $this->espacioModel->getPorParqueoYTipo($idParqueo, $idTipoVehiculo);
 
         // Agrupar por sector / piso

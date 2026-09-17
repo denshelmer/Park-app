@@ -75,7 +75,17 @@
                                 </span>
                             </td>
                             <td>
-                                <i class="bi bi-clock me-1 text-muted"></i><?= $fechaPrevista ?>
+                                <div><i class="bi bi-clock me-1 text-muted"></i><?= $fechaPrevista ?></div>
+                                <?php if ($estado === 'Confirmada'): ?>
+                                    <?php 
+                                    $toleranciaMin = (int)($res['minutos_tolerancia'] ?? 15);
+                                    $tLlegada = !empty($res['fecha_hora_prevista_llegada']) ? strtotime($res['fecha_hora_prevista_llegada']) : 0;
+                                    $tLimite = $tLlegada + ($toleranciaMin * 60);
+                                    ?>
+                                    <div class="text-muted" style="font-size: 0.75rem;">
+                                        <i class="bi bi-stopwatch text-warning me-1"></i>Límite: <?= date('H:i', $tLimite) ?> (+<?= $toleranciaMin ?> min)
+                                    </div>
+                                <?php endif; ?>
                             </td>
                             <td>
                                 <?php if ($estado === 'Confirmada'): ?>

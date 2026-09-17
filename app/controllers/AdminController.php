@@ -13,6 +13,7 @@ require_once APP_PATH . '/models/Usuario.php';
 require_once APP_PATH . '/models/Pago.php';
 require_once APP_PATH . '/models/IngresoSalida.php';
 require_once APP_PATH . '/models/TipoVehiculo.php';
+require_once APP_PATH . '/models/Reserva.php';
 
 class AdminController extends Controller {
     private Parqueo $parqueoModel;
@@ -22,6 +23,7 @@ class AdminController extends Controller {
     private Pago $pagoModel;
     private IngresoSalida $ingresoSalidaModel;
     private TipoVehiculo $tipoVehiculoModel;
+    private Reserva $reservaModel;
 
     public function __construct() {
         $this->parqueoModel = new Parqueo();
@@ -31,6 +33,7 @@ class AdminController extends Controller {
         $this->pagoModel = new Pago();
         $this->ingresoSalidaModel = new IngresoSalida();
         $this->tipoVehiculoModel = new TipoVehiculo();
+        $this->reservaModel = new Reserva();
     }
 
     /**
@@ -42,6 +45,9 @@ class AdminController extends Controller {
         $idParqueo = isset($_GET['parqueo_id']) && is_numeric($_GET['parqueo_id']) && (int)$_GET['parqueo_id'] > 0 
             ? (int)$_GET['parqueo_id'] 
             : null;
+
+        // Liberar reservas vencidas antes de obtener conteos y métricas
+        $this->reservaModel->liberarReservasVencidas($idParqueo);
 
         $parqueos = $this->parqueoModel->getAllActivos();
         $conteoEspacios = $this->espacioModel->getConteoPorEstado($idParqueo ?? 0);
@@ -145,6 +151,9 @@ class AdminController extends Controller {
         $idParqueo = isset($_GET['parqueo_id']) && (int)$_GET['parqueo_id'] > 0 
             ? (int)$_GET['parqueo_id'] 
             : ($parqueos[0]['id_parqueo'] ?? 1);
+
+        // Liberar reservas vencidas para refrescar estados de cajones en tiempo real
+        $this->reservaModel->liberarReservasVencidas($idParqueo);
 
         $tiposVehiculo = $this->tipoVehiculoModel->getAllActivos();
         $espacios = $this->espacioModel->getPorParqueo($idParqueo);

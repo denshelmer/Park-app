@@ -62,6 +62,9 @@ class OperadorController extends Controller {
         $idParqueo = isset($_GET['id_parqueo']) ? (int)$_GET['id_parqueo'] : ($_SESSION['caseta_id_parqueo'] ?? (int)$parqueos[0]['id_parqueo']);
         $_SESSION['caseta_id_parqueo'] = $idParqueo;
 
+        // Auto-cancelar y liberar reservas vencidas en este parqueo
+        $this->reservaModel->liberarReservasVencidas($idParqueo);
+
         $parqueo = $this->parqueoModel->getConDetalle($idParqueo);
         $espacios = $this->espacioModel->getPorParqueo($idParqueo);
         $activos = $this->ingresoSalidaModel->getActivosEnParqueo($idParqueo);
@@ -133,6 +136,9 @@ class OperadorController extends Controller {
         $idParqueo = isset($_GET['id_parqueo']) ? (int)$_GET['id_parqueo'] : ($_SESSION['caseta_id_parqueo'] ?? (!empty($parqueos) ? (int)$parqueos[0]['id_parqueo'] : 1));
         $_SESSION['caseta_id_parqueo'] = $idParqueo;
 
+        // Liberar reservas vencidas para reflejar espacios libres en la caseta
+        $this->reservaModel->liberarReservasVencidas($idParqueo);
+
         $tiposVehiculo = $this->tipoVehiculoModel->getAllActivos();
         $todosEspacios = $this->espacioModel->getPorParqueo($idParqueo);
 
@@ -169,7 +175,11 @@ class OperadorController extends Controller {
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect('caseta/ingreso');
+            return;
         }
+
+        // Liberar reservas vencidas antes de cualquier registro o validación
+        $this->reservaModel->liberarReservasVencidas();
 
         $tipoIngreso = $_POST['tipo_ingreso'] ?? 'directo';
         $idOperador = Auth::id() ?? 1;
@@ -183,6 +193,7 @@ class OperadorController extends Controller {
             if (empty($placa) || strlen($placa) < 5) {
                 $_SESSION['flash_error'] = 'Debe ingresar una placa boliviana válida (Ej. 2049-ZXY).';
                 $this->redirect('caseta/ingreso');
+                return;
             }
 
             // Formatear placa si no tiene guión (e.g. 2049ZXY -> 2049-ZXY)
@@ -195,6 +206,7 @@ class OperadorController extends Controller {
             if ($activa) {
                 $_SESSION['flash_error'] = "El vehículo con placa {$placa} ya tiene una estancia activa dentro del parqueo (Ticket: {$activa['numero_ticket']}, Espacio: {$activa['codigo_espacio']}). Registre su salida antes de un nuevo ingreso.";
                 $this->redirect('caseta/ingreso');
+                return;
             }
 
             // Verificar disponibilidad del espacio
@@ -202,6 +214,7 @@ class OperadorController extends Controller {
             if (!$espacio || $espacio['estado'] !== 'Disponible') {
                 $_SESSION['flash_error'] = 'El espacio seleccionado ya no se encuentra disponible. Por favor elija otro espacio libre.';
                 $this->redirect('caseta/ingreso');
+                return;
             }
 
             // Crear registro de ingreso
@@ -214,6 +227,7 @@ class OperadorController extends Controller {
             if (!$idIngreso) {
                 $_SESSION['flash_error'] = 'Error al registrar el ingreso en la base de datos.';
                 $this->redirect('caseta/ingreso');
+                return;
             }
 
             // Marcar espacio como ocupado
@@ -221,6 +235,7 @@ class OperadorController extends Controller {
 
             $_SESSION['flash_success'] = "Ingreso registrado correctamente para la placa {$placa}.";
             $this->redirect('caseta/ticket?id=' . $idIngreso);
+            return;
 
         } elseif ($tipoIngreso === 'qr') {
             // Ingreso por Validación QR
@@ -228,30 +243,51 @@ class OperadorController extends Controller {
             if (empty($token)) {
                 $_SESSION['flash_error'] = 'Debe ingresar o escanear el código QR o token de reserva.';
                 $this->redirect('caseta/ingreso?tab=qr');
+                return;
             }
 
             $reserva = $this->reservaModel->findByTokenQR($token);
             if (!$reserva) {
                 $_SESSION['flash_error'] = "No se encontró ninguna reserva asociada al código QR o token: {$token}.";
                 $this->redirect('caseta/ingreso?tab=qr');
+                return;
             }
 
             // Validar estado de la reserva
             if ($reserva['estado_reserva'] === 'En Parqueo') {
                 $_SESSION['flash_error'] = "Esta reserva ya fue ingresada al parqueo previamente y el vehículo se encuentra en estadía activa.";
                 $this->redirect('caseta/ingreso?tab=qr');
+                return;
             }
             if ($reserva['estado_reserva'] === 'Cancelada') {
-                $_SESSION['flash_error'] = "Esta reserva fue cancelada previamente y ha quedado sin efecto.";
+                $_SESSION['flash_error'] = "Esta reserva fue cancelada (o expiró su margen de tolerancia de 15 minutos) y ha quedado sin efecto.";
                 $this->redirect('caseta/ingreso?tab=qr');
+                return;
             }
             if ($reserva['estado_reserva'] === 'Finalizada') {
                 $_SESSION['flash_error'] = "Esta reserva ya concluyó su estadía anteriormente.";
                 $this->redirect('caseta/ingreso?tab=qr');
+                return;
             }
             if ($reserva['estado_reserva'] !== 'Confirmada') {
                 $_SESSION['flash_error'] = "La reserva se encuentra en estado '{$reserva['estado_reserva']}' y no puede ser ingresada.";
                 $this->redirect('caseta/ingreso?tab=qr');
+                return;
+            }
+
+            // Validar si la reserva superó su tolerancia de 15 minutos
+            $tolerancia = (int)($reserva['minutos_tolerancia'] ?? 15);
+            $tiempoLlegada = !empty($reserva['fecha_hora_prevista_llegada']) ? strtotime($reserva['fecha_hora_prevista_llegada']) : 0;
+            $tiempoLimite = $tiempoLlegada + ($tolerancia * 60);
+
+            if ($tiempoLlegada > 0 && time() > $tiempoLimite) {
+                // Cancelar y liberar el espacio de inmediato
+                $this->reservaModel->cancelarPorTolerancia((int)$reserva['id_reserva']);
+                $horaLlegadaStr = date('H:i', $tiempoLlegada);
+                $horaLimiteStr = date('H:i', $tiempoLimite);
+                $_SESSION['flash_error'] = "Reserva Vencida: Se superaron los {$tolerancia} minutos de tolerancia permitidos (llegada prevista: {$horaLlegadaStr}, tolerancia válida hasta: {$horaLimiteStr}). La reserva fue cancelada automáticamente y el espacio ha sido liberado.";
+                $this->redirect('caseta/ingreso?tab=qr');
+                return;
             }
 
             // Validar espacio
