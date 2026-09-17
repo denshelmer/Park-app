@@ -160,7 +160,7 @@ $homeUrl = match($rol) {
                         </li>
                         <?php if ($isAuth): ?>
                             <li class="nav-item">
-                                <a class="nav-link <?= ($currentRoute === 'mis-reservas' || str_starts_with($currentRoute, 'reserva')) ? 'active' : '' ?>" href="<?= BASE_URL ?>/mis-reservas">
+                                <a class="nav-link <?= ($currentRoute === 'mis-reservas' || str_starts_with($currentRoute, 'reserva/')) ? 'active' : '' ?>" href="<?= BASE_URL ?>/mis-reservas">
                                     Mis Reservas
                                 </a>
                             </li>
