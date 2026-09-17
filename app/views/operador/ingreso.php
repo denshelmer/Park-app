@@ -120,17 +120,39 @@
 
                     <!-- 2. VALIDAR RESERVA CON QR -->
                     <div class="tab-pane fade <?= $activeTab === 'qr' ? 'show active' : '' ?>" id="qr" role="tabpanel">
-                        <form action="<?= BASE_URL ?>/caseta/ingreso" method="POST">
+                        <form action="<?= BASE_URL ?>/caseta/ingreso" method="POST" id="formValidarQR">
                             <input type="hidden" name="tipo_ingreso" value="qr">
 
                             <div class="text-center p-4 bg-light rounded border mb-4">
                                 <div class="mb-3">
-                                    <i class="bi bi-qr-code-scan text-primary" style="font-size: 3.5rem;"></i>
+                                    <div class="brand-badge d-inline-flex align-items-center justify-content-center bg-primary text-white" style="width: 60px; height: 60px; font-size: 1.8rem;">
+                                        <i class="bi bi-qr-code-scan"></i>
+                                    </div>
                                 </div>
-                                <h6 class="fw-bold mb-1" style="color: var(--park-primary);">Lector de Código QR / Código Alfanumérico</h6>
-                                <p class="text-muted small mb-0">
-                                    Escanee con la pistola óptica el pase digital del conductor o ingrese manualmente el token de reserva.
+                                <h5 class="fw-bold mb-1" style="color: var(--park-primary);">Lector y Validador de QR</h5>
+                                <p class="text-muted small mb-3">
+                                    Escanee el código QR digital del conductor con la <strong>cámara de su teléfono / webcam</strong> o utilice una pistola óptica USB.
                                 </p>
+
+                                <!-- Botones de Control de la Cámara -->
+                                <div class="d-flex justify-content-center gap-2 mb-3">
+                                    <button type="button" class="btn btn-primary fw-bold px-3 shadow-sm" id="btnIniciarCamara">
+                                        <i class="bi bi-camera-video-fill me-1"></i>Activar Cámara del Teléfono
+                                    </button>
+                                    <button type="button" class="btn btn-danger fw-bold px-3 d-none" id="btnDetenerCamara">
+                                        <i class="bi bi-camera-video-off-fill me-1"></i>Apagar Cámara
+                                    </button>
+                                </div>
+
+                                <!-- Feedback y Visor de Cámara -->
+                                <div id="camaraFeedback" class="alert alert-info py-2 small d-none mb-3">
+                                    <i class="bi bi-info-circle me-1"></i>Enfoca el código QR dentro del recuadro para validar automáticamente.
+                                </div>
+                                <div id="camaraError" class="alert alert-warning py-2 small d-none mb-3"></div>
+
+                                <div id="qrReaderWrapper" class="d-none mx-auto mb-3" style="max-width: 380px; border-radius: 12px; overflow: hidden; border: 3px solid var(--park-primary); box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                                    <div id="qr-reader" style="width: 100%;"></div>
+                                </div>
                             </div>
 
                             <div class="mb-4">
@@ -162,19 +184,127 @@
     </div>
 </div>
 
+<!-- Biblioteca Local para Escaneo QR con Cámara en Teléfonos y Webcams -->
+<script src="<?= BASE_URL ?>/public/js/html5-qrcode.min.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // 1. Auto-formato de placa boliviana
     const placaInput = document.getElementById('placaInput');
     if (placaInput) {
         placaInput.addEventListener('input', function(e) {
             let val = this.value.toUpperCase().replace(/[^0-9A-Z]/g, '');
             if (val.length > 4) {
-                // Auto-formatear con guión si tiene formato boliviano (e.g. 4829ABC -> 4829-ABC)
                 val = val.substring(0, 4) + '-' + val.substring(4, 7);
             }
             this.value = val;
         });
     }
+
+    // 2. Control de Escaneo con Cámara
+    let html5QrCode = null;
+    const btnIniciar = document.getElementById('btnIniciarCamara');
+    const btnDetener = document.getElementById('btnDetenerCamara');
+    const readerWrapper = document.getElementById('qrReaderWrapper');
+    const feedback = document.getElementById('camaraFeedback');
+    const errorBox = document.getElementById('camaraError');
+    const qrTokenInput = document.getElementById('qrTokenInput');
+    const formValidarQR = document.getElementById('formValidarQR');
+
+    function iniciarCamara() {
+        if (!window.Html5Qrcode) {
+            errorBox.textContent = "Error al cargar el motor de escaneo de cámara.";
+            errorBox.classList.remove('d-none');
+            return;
+        }
+
+        errorBox.classList.add('d-none');
+        readerWrapper.classList.remove('d-none');
+        feedback.className = 'alert alert-info py-2 small mb-3';
+        feedback.innerHTML = '<i class="bi bi-camera me-1"></i>Cámara activa. Apunte hacia el código QR del conductor.';
+        feedback.classList.remove('d-none');
+        btnIniciar.classList.add('d-none');
+        btnDetener.classList.remove('d-none');
+
+        html5QrCode = new Html5Qrcode("qr-reader");
+
+        const config = {
+            fps: 10,
+            qrbox: { width: 240, height: 240 },
+            aspectRatio: 1.0
+        };
+
+        // Solicitar cámara trasera (environment) en teléfonos
+        html5QrCode.start(
+            { facingMode: "environment" },
+            config,
+            function onScanSuccess(decodedText, decodedResult) {
+                let token = decodedText.trim();
+                // Si el QR tiene URL completa, extraer el parámetro token
+                if (token.includes('token=')) {
+                    const match = token.match(/token=([^&]+)/);
+                    if (match && match[1]) {
+                        token = decodeURIComponent(match[1]);
+                    }
+                }
+
+                if (qrTokenInput) {
+                    qrTokenInput.value = token;
+                }
+
+                feedback.className = 'alert alert-success py-2 small mb-3';
+                feedback.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>¡QR detectado! Validando token: <strong>' + token + '</strong>...';
+
+                detenerCamara();
+
+                // Auto-envío del formulario
+                setTimeout(function() {
+                    if (formValidarQR) {
+                        formValidarQR.submit();
+                    }
+                }, 500);
+            },
+            function onScanFailure(error) {
+                // Monitoreo continuo entre cuadros
+            }
+        ).catch(function(err) {
+            console.error("Error al iniciar cámara:", err);
+            errorBox.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i>No se pudo acceder a la cámara. Verifique los permisos de cámara en su navegador o ingrese el código manualmente.';
+            errorBox.classList.remove('d-none');
+            detenerCamara();
+        });
+    }
+
+    function detenerCamara() {
+        if (html5QrCode) {
+            html5QrCode.stop().then(function() {
+                html5QrCode.clear();
+                html5QrCode = null;
+            }).catch(function(err) {
+                console.error("Error al detener cámara:", err);
+            });
+        }
+        readerWrapper.classList.add('d-none');
+        btnIniciar.classList.remove('d-none');
+        btnDetener.classList.add('d-none');
+    }
+
+    if (btnIniciar) {
+        btnIniciar.addEventListener('click', iniciarCamara);
+    }
+    if (btnDetener) {
+        btnDetener.addEventListener('click', detenerCamara);
+    }
+
+    // Detener cámara si el usuario cambia de pestaña
+    const tabs = document.querySelectorAll('#ingresoTabs button');
+    tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            if (this.id !== 'qr-tab') {
+                detenerCamara();
+            }
+        });
+    });
 });
 </script>
 

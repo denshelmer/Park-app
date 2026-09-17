@@ -29,20 +29,35 @@
                 <?php endif; ?>
 
                 <!-- Formulario de Búsqueda de Estancia -->
-                <form action="<?= BASE_URL ?>/caseta/salida" method="GET" class="mb-4">
+                <form action="<?= BASE_URL ?>/caseta/salida" method="GET" class="mb-4" id="formBuscarSalida">
                     <input type="hidden" name="id_parqueo" value="<?= $idParqueo ?>">
                     <label class="form-label fw-semibold">Buscar Ticket o Placa de Vehículo</label>
                     <div class="input-group input-group-lg">
                         <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
                         <input type="text" class="form-control fw-bold font-monospace" 
-                               name="buscar" value="<?= htmlspecialchars($buscar) ?>" 
+                               name="buscar" id="buscarSalidaInput" value="<?= htmlspecialchars($buscar) ?>" 
                                placeholder="Ej. TCK-2026-0001 o 2049-ZXY..." 
                                required autofocus>
+                        <button class="btn btn-outline-primary fw-semibold" type="button" id="btnCamaraSalida" title="Escanear ticket o QR con la cámara del teléfono">
+                            <i class="bi bi-camera-video-fill me-1"></i>Cámara
+                        </button>
                         <button class="btn btn-dark fw-bold px-4" type="submit">
                             Buscar
                         </button>
                     </div>
-                    <small class="text-muted">Puede ingresar el número de ticket impreso o la placa vehicular.</small>
+                    <small class="text-muted">Puede ingresar el número de ticket impreso, la placa vehicular o escanear con la cámara.</small>
+
+                    <!-- Visor de Cámara para Salida -->
+                    <div id="wrapperCamaraSalida" class="card p-3 my-3 border bg-light d-none text-center shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="small fw-semibold text-primary"><i class="bi bi-camera me-1"></i>Enfoca el código QR o código de barras del ticket</span>
+                            <button type="button" class="btn btn-sm btn-danger fw-bold" id="btnCerrarCamaraSalida">
+                                <i class="bi bi-x-circle me-1"></i>Cerrar Cámara
+                            </button>
+                        </div>
+                        <div id="errorCamaraSalida" class="alert alert-warning py-1 small d-none mb-2"></div>
+                        <div id="qrReaderSalida" style="max-width: 360px; margin: 0 auto; border-radius: 8px; overflow: hidden; border: 2px solid var(--park-primary);"></div>
+                    </div>
                 </form>
 
                 <?php if ($estancia): ?>
@@ -338,6 +353,87 @@ document.addEventListener('DOMContentLoaded', function() {
         recibidoElem.addEventListener('input', calcularCambio);
         calcularCambio();
     }
+
+    // Cámara en pantalla de salida
+    let html5QrSalida = null;
+    const btnCamaraSalida = document.getElementById('btnCamaraSalida');
+    const btnCerrarSalida = document.getElementById('btnCerrarCamaraSalida');
+    const wrapperSalida = document.getElementById('wrapperCamaraSalida');
+    const errorSalida = document.getElementById('errorCamaraSalida');
+    const inputBuscar = document.getElementById('buscarSalidaInput');
+    const formBuscar = document.getElementById('formBuscarSalida');
+
+    function iniciarCamaraSalida() {
+        if (!window.Html5Qrcode) {
+            errorSalida.textContent = "Error al cargar la librería de escaneo.";
+            errorSalida.classList.remove('d-none');
+            return;
+        }
+
+        errorSalida.classList.add('d-none');
+        wrapperSalida.classList.remove('d-none');
+
+        html5QrSalida = new Html5Qrcode("qrReaderSalida");
+
+        const config = {
+            fps: 10,
+            qrbox: { width: 250, height: 250 },
+            aspectRatio: 1.0
+        };
+
+        html5QrSalida.start(
+            { facingMode: "environment" },
+            config,
+            function onScanSuccess(decodedText) {
+                let texto = decodedText.trim();
+                // Limpiar si vino de un token o URL
+                if (texto.includes('token=')) {
+                    const match = texto.match(/token=([^&]+)/);
+                    if (match && match[1]) {
+                        texto = decodeURIComponent(match[1]);
+                    }
+                }
+                // Limpiar si tiene asteriscos de código de barras (ej *TCK-2026-0001*)
+                texto = texto.replace(/\*/g, '');
+
+                if (inputBuscar) {
+                    inputBuscar.value = texto;
+                }
+
+                detenerCamaraSalida();
+
+                if (formBuscar) {
+                    formBuscar.submit();
+                }
+            },
+            function onScanFailure(error) {}
+        ).catch(function(err) {
+            console.error(err);
+            errorSalida.textContent = "No se pudo acceder a la cámara. Verifique los permisos.";
+            errorSalida.classList.remove('d-none');
+            detenerCamaraSalida();
+        });
+    }
+
+    function detenerCamaraSalida() {
+        if (html5QrSalida) {
+            html5QrSalida.stop().then(function() {
+                html5QrSalida.clear();
+                html5QrSalida = null;
+            }).catch(function(err) {
+                console.error(err);
+            });
+        }
+        wrapperSalida.classList.add('d-none');
+    }
+
+    if (btnCamaraSalida) {
+        btnCamaraSalida.addEventListener('click', iniciarCamaraSalida);
+    }
+    if (btnCerrarSalida) {
+        btnCerrarSalida.addEventListener('click', detenerCamaraSalida);
+    }
 });
 </script>
+<script src="<?= BASE_URL ?>/public/js/html5-qrcode.min.js"></script>
 
