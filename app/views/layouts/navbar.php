@@ -15,13 +15,11 @@ $homeUrl = match($rol) {
 <nav class="navbar navbar-expand-xl navbar-dark park-navbar sticky-top">
     <div class="container-fluid park-nav-container">
         <!-- 1. Marca Institucional (Izquierda) -->
-        <div class="park-nav-brand-col">
-            <a class="navbar-brand me-0" href="<?= $homeUrl ?>">
-                <i class="bi bi-p-square-fill me-2" style="color: #c89234; font-size: 1.35rem;"></i>
-                <span class="fw-bold">ParkApp</span>
-                <span class="park-brand-badge">El Alto</span>
-            </a>
-        </div>
+        <a class="navbar-brand park-brand-item me-0" href="<?= $homeUrl ?>">
+            <i class="bi bi-p-square-fill me-2" style="color: #c89234; font-size: 1.35rem;"></i>
+            <span class="fw-bold">ParkApp</span>
+            <span class="park-brand-badge">El Alto</span>
+        </a>
 
         <!-- Botón Móvil Toggler (Tableta / Celular) -->
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Navegación">
@@ -29,8 +27,8 @@ $homeUrl = match($rol) {
         </button>
 
         <div class="collapse navbar-collapse park-nav-collapse" id="navMain">
-            <!-- 2. Enlaces Principales Centrados (Centro de la Pantalla - Sin iconos al inicio de las palabras) -->
-            <div class="park-nav-center-col">
+            <!-- 2. Enlaces Principales Centrados (Centro de la Pantalla - Todas las secciones) -->
+            <div class="park-center-nav-wrapper">
                 <ul class="park-main-nav">
                     
                     <?php if ($rol === 1): ?>
@@ -166,14 +164,20 @@ $homeUrl = match($rol) {
                                     Mis Reservas
                                 </a>
                             </li>
+                        <?php else: ?>
+                            <li class="nav-item">
+                                <a class="nav-link <?= ($currentRoute === 'registro') ? 'active' : '' ?>" href="<?= BASE_URL ?>/registro">
+                                    Registrarse
+                                </a>
+                            </li>
                         <?php endif; ?>
                     <?php endif; ?>
 
                 </ul>
             </div>
 
-            <!-- 3. Perfil de Usuario / Inicio de Sesión (Derecha) -->
-            <div class="park-nav-user-col">
+            <!-- 3. Perfil de Usuario / Inicio de Sesión (Extremo Derecho) -->
+            <div class="park-right-user-wrapper">
                 <ul class="park-user-nav">
                     <?php if ($isAuth): ?>
                         <?php
@@ -213,14 +217,9 @@ $homeUrl = match($rol) {
                             </ul>
                         </li>
                     <?php else: ?>
-                        <li class="nav-item me-xl-2">
-                            <a class="nav-link" href="<?= BASE_URL ?>/registro">
-                                <i class="bi bi-person-plus me-1"></i>Registrarse
-                            </a>
-                        </li>
                         <li class="nav-item">
-                            <a class="btn btn-sm px-3 fw-bold text-white shadow-sm" style="background-color: #c89234; border-radius: 6px;" href="<?= BASE_URL ?>/login">
-                                <i class="bi bi-box-arrow-in-right me-1"></i>Ingresar
+                            <a class="btn btn-sm px-3 py-2 fw-bold text-white shadow-sm d-inline-flex align-items-center" style="background-color: #c89234; border-radius: 8px;" href="<?= BASE_URL ?>/login">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Iniciar Sesión
                             </a>
                         </li>
                     <?php endif; ?>

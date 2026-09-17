@@ -1,38 +1,38 @@
-<!-- Encabezado de la Sección -->
-<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+<!-- Encabezado de la Sección Estandarizado -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div>
-        <h3 class="fw-bold mb-1" style="color: var(--park-primary); letter-spacing: -0.5px;">
-            <i class="bi bi-clock-history me-2" style="color: #c89234;"></i>Historial de Mis Reservas
-        </h3>
-        <p class="text-muted small mb-0">Consulte el estado de sus reservas activas, descargue comprobantes QR o cancele si no podrá asistir.</p>
+        <h2 class="fw-bold mb-1" style="color: #152b47;">
+            Historial de Mis Reservas
+        </h2>
+        <p class="text-muted small mb-0">Consulte el estado de sus reservas activas, descargue comprobantes QR o cancele si no podrá asistir</p>
     </div>
-    <a href="<?= BASE_URL ?>/disponibilidad" class="btn btn-primary-formal">
-        <i class="bi bi-plus-circle me-1"></i>Nueva Reserva
+    <a href="<?= BASE_URL ?>/disponibilidad" class="btn fw-semibold text-white shadow-sm" style="background-color: #c89234;">
+        <i class="bi bi-plus-circle-fill me-1"></i>Nueva Reserva
     </a>
 </div>
 
-<?php if (!empty($error)): ?>
-    <div class="classic-alert classic-alert-danger mb-4">
-        <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
-        <div><?= htmlspecialchars($error) ?></div>
+<?php if (!empty($error) || isset($_SESSION['flash_error'])): ?>
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><?= htmlspecialchars($error ?? $_SESSION['flash_error']) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 <?php endif; ?>
 
-<?php if (!empty($success)): ?>
-    <div class="classic-alert classic-alert-success mb-4">
-        <i class="bi bi-check-circle alert-icon"></i>
-        <div><?= htmlspecialchars($success) ?></div>
+<?php if (!empty($success) || isset($_SESSION['flash_success'])): ?>
+    <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i><?= htmlspecialchars($success ?? $_SESSION['flash_success']) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 <?php endif; ?>
 
 <!-- Tabla de Reservas -->
-<div class="card formal-card shadow-sm border-0">
+<div class="card shadow-sm border-0">
     <?php if (empty($reservas)): ?>
         <div class="p-5 text-center">
             <i class="bi bi-calendar-x fs-1 text-muted d-block mb-3"></i>
             <h5 class="fw-bold text-secondary">Aún no tiene reservas registradas</h5>
             <p class="text-muted small mb-4">Puede consultar la disponibilidad en tiempo real y asegurar su espacio de forma rápida.</p>
-            <a href="<?= BASE_URL ?>/disponibilidad" class="btn btn-primary-formal px-4">
+            <a href="<?= BASE_URL ?>/disponibilidad" class="btn fw-semibold text-white shadow-sm px-4" style="background-color: #c89234;">
                 <i class="bi bi-geo-alt me-1"></i>Explorar Parqueos Disponibles
             </a>
         </div>

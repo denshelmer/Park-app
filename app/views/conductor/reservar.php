@@ -1,33 +1,33 @@
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h2 class="fw-bold mb-1" style="color: #152b47;">
+            Nueva Reserva de Espacio
+        </h2>
+        <p class="text-muted small mb-0">Seleccione el parqueo, vehículo y hora prevista de llegada para asegurar su cajón</p>
+    </div>
+    <a href="<?= BASE_URL ?>/disponibilidad" class="btn btn-outline-secondary shadow-sm">
+        <i class="bi bi-arrow-left me-1"></i>Ver Disponibilidad
+    </a>
+</div>
+
+<?php if (!empty($error) || isset($_SESSION['flash_error'])): ?>
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><?= htmlspecialchars($error ?? $_SESSION['flash_error']) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<?php endif; ?>
+
+<?php if (!empty($success) || isset($_SESSION['flash_success'])): ?>
+    <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i><?= htmlspecialchars($success ?? $_SESSION['flash_success']) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<?php endif; ?>
+
 <div class="row justify-content-center">
     <div class="col-lg-10 col-xl-9">
-        <!-- Tarjeta Formal de Reserva -->
-        <div class="card formal-card">
-            <div class="formal-header p-4" style="background-color: #f8fafc; border-bottom: 1px solid var(--park-border);">
-                <div class="d-flex align-items-center">
-                    <div class="brand-badge me-3" style="width: 44px; height: 44px; font-size: 1.3rem;">
-                        <i class="bi bi-calendar-check"></i>
-                    </div>
-                    <div>
-                        <h4 class="fw-bold mb-0" style="color: var(--park-primary);">Nueva Reserva de Espacio</h4>
-                        <p class="text-muted small mb-0">Seleccione el parqueo, vehículo y hora prevista de llegada para asegurar su cajón.</p>
-                    </div>
-                </div>
-            </div>
-
+        <div class="card shadow-sm border-0 mb-4">
             <div class="card-body p-4 p-md-5">
-                <?php if (!empty($error)): ?>
-                    <div class="classic-alert classic-alert-danger mb-4">
-                        <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
-                        <div><?= htmlspecialchars($error) ?></div>
-                    </div>
-                <?php endif; ?>
-
-                <?php if (!empty($success)): ?>
-                    <div class="classic-alert classic-alert-success mb-4">
-                        <i class="bi bi-check-circle alert-icon"></i>
-                        <div><?= htmlspecialchars($success) ?></div>
-                    </div>
-                <?php endif; ?>
 
                 <form action="<?= BASE_URL ?>/reservar" method="POST">
                     <div class="row g-4">
@@ -179,7 +179,7 @@
                         <a href="<?= BASE_URL ?>/disponibilidad" class="btn btn-outline-secondary px-4 py-2">
                             <i class="bi bi-arrow-left me-1"></i>Volver
                         </a>
-                        <button type="submit" class="btn btn-primary-formal px-4 py-2">
+                        <button type="submit" class="btn fw-semibold text-white shadow-sm px-4 py-2" style="background-color: #c89234;">
                             <i class="bi bi-qr-code me-1"></i>Confirmar y Generar Código QR
                         </button>
                     </div>

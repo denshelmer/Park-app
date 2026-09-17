@@ -1,29 +1,32 @@
-<!-- Encabezado de la Sección -->
-<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+<!-- Encabezado de la Sección Estandarizado -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div>
-        <h3 class="fw-bold mb-1" style="color: var(--park-primary); letter-spacing: -0.5px;">
-            <i class="bi bi-geo-alt-fill me-2" style="color: #c89234;"></i>Disponibilidad de Parqueos
-        </h3>
-        <p class="text-muted small mb-0">Consulte en tiempo real los espacios libres en las diferentes zonas de la ciudad de El Alto.</p>
+        <h2 class="fw-bold mb-1" style="color: #152b47;">
+            Disponibilidad de Parqueos
+        </h2>
+        <p class="text-muted small mb-0">Consulte en tiempo real los espacios libres en las diferentes zonas de la ciudad de El Alto</p>
     </div>
-    <div class="mt-2 mt-md-0">
-        <span class="badge px-3 py-2 text-white" style="background-color: var(--park-primary); font-size: 0.82rem; font-weight: 500;">
+    <div class="d-flex align-items-center gap-2">
+        <span class="badge px-3 py-2 text-white shadow-sm" style="background-color: #152b47; font-size: 0.85rem; font-weight: 500;">
             <i class="bi bi-broadcast me-1 text-success"></i>Monitoreo en Tiempo Real
         </span>
+        <a href="<?= BASE_URL ?>/reservar" class="btn fw-semibold text-white shadow-sm" style="background-color: #c89234;">
+            <i class="bi bi-calendar-plus me-1"></i>Reservar Espacio
+        </a>
     </div>
 </div>
 
-<?php if (!empty($error)): ?>
-    <div class="classic-alert classic-alert-danger mb-4">
-        <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
-        <div><?= htmlspecialchars($error) ?></div>
+<?php if (!empty($error) || isset($_SESSION['flash_error'])): ?>
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><?= htmlspecialchars($error ?? $_SESSION['flash_error']) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 <?php endif; ?>
 
-<?php if (!empty($success)): ?>
-    <div class="classic-alert classic-alert-success mb-4">
-        <i class="bi bi-check-circle alert-icon"></i>
-        <div><?= htmlspecialchars($success) ?></div>
+<?php if (!empty($success) || isset($_SESSION['flash_success'])): ?>
+    <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i><?= htmlspecialchars($success ?? $_SESSION['flash_success']) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 <?php endif; ?>
 
