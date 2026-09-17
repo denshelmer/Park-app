@@ -31,10 +31,10 @@
 <body onload="window.print()">
     <div class="no-print" style="margin-bottom: 15px; text-align: center;">
         <button onclick="window.print()" style="padding: 6px 14px; font-weight: bold; cursor: pointer; background: #198754; color: #fff; border: none; border-radius: 4px;">
-            🖨️ Imprimir Recibo
+            Imprimir Recibo
         </button>
         <button onclick="window.location.href='<?= BASE_URL ?>/caseta'" style="padding: 6px 14px; cursor: pointer; background: #6c757d; color: #fff; border: none; border-radius: 4px; margin-left: 6px;">
-            ⬅️ Volver a Caseta
+            Volver a Caseta
         </button>
     </div>
 

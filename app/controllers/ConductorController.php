@@ -39,7 +39,7 @@ class ConductorController extends Controller {
     }
 
     public function reservar(): void {
-        Auth::requireRole(3); // Solo conductores
+        Auth::requireRole([1, 3]); // Admin o Conductor
         
         $parqueos = $this->parqueoModel->getActivos();
         $tiposVehiculo = $this->tipoVehiculoModel->getAllActivos();
@@ -60,7 +60,7 @@ class ConductorController extends Controller {
     }
 
     public function procesarReserva(): void {
-        Auth::requireRole(3);
+        Auth::requireRole([1, 3]);
 
         $idParqueo = (int)($_POST['id_parqueo'] ?? 0);
         $idTipoVehiculo = (int)($_POST['id_tipo_vehiculo'] ?? 0);
@@ -190,7 +190,7 @@ class ConductorController extends Controller {
     }
 
     public function misReservas(): void {
-        Auth::requireRole(3);
+        Auth::requireRole([1, 3]);
 
         $reservas = $this->reservaModel->getActivasPorUsuario((int)Auth::id());
         $error = $_SESSION['flash_error'] ?? null;
@@ -206,7 +206,7 @@ class ConductorController extends Controller {
     }
 
     public function cancelarReserva(): void {
-        Auth::requireRole(3);
+        Auth::requireRole([1, 3]);
 
         $idReserva = (int)($_POST['id_reserva'] ?? 0);
         if ($idReserva <= 0) {
@@ -226,7 +226,7 @@ class ConductorController extends Controller {
     }
 
     public function verQR(): void {
-        Auth::requireRole(3);
+        Auth::requireRole([1, 3]);
 
         $token = trim($_GET['token'] ?? '');
         if (empty($token)) {

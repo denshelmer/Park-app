@@ -63,7 +63,8 @@ class Auth {
         }
 
         $roles = is_array($allowedRoles) ? $allowedRoles : [$allowedRoles];
-        if (!in_array(self::roleId(), $roles)) {
+        // El Administrador (rol 1) cuenta con acceso universal a todas las áreas del sistema
+        if (self::roleId() !== 1 && !in_array(self::roleId(), $roles)) {
             http_response_code(403);
             die("<div style='font-family:sans-serif; text-align:center; padding:50px;'><h2>403 - Acceso Denegado</h2><p>No tienes permisos para acceder a esta sección.</p><a href='" . BASE_URL . "/'>Volver</a></div>");
         }

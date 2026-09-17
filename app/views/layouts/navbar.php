@@ -2,86 +2,232 @@
 $isAuth = Auth::check();
 $rol = Auth::roleId();
 $userName = Auth::user()['nombre_completo'] ?? '';
+$userEmail = Auth::user()['email'] ?? '';
+
+// Detección de ruta activa
+$currentRoute = trim($_GET['url'] ?? '', '/');
+$homeUrl = match($rol) {
+    1 => BASE_URL . '/admin/dashboard',
+    2 => BASE_URL . '/caseta',
+    default => BASE_URL . '/'
+};
 ?>
-<nav class="navbar navbar-expand-lg navbar-dark shadow-sm" style="background-color: #152b47; border-bottom: 2px solid #c89234;">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold" style="color: #ffffff; letter-spacing: 0.5px;" href="<?= BASE_URL ?>/">
-            <i class="bi bi-p-square-fill me-2" style="color: #c89234;"></i>ParkApp <span class="badge bg-light text-dark fw-normal ms-1" style="font-size: 0.72rem; vertical-align: middle;">El Alto</span>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+<nav class="navbar navbar-expand-xl navbar-dark park-navbar sticky-top">
+    <div class="container-fluid park-nav-container">
+        <!-- 1. Marca Institucional (Izquierda) -->
+        <div class="park-nav-brand-col">
+            <a class="navbar-brand me-0" href="<?= $homeUrl ?>">
+                <i class="bi bi-p-square-fill me-2" style="color: #c89234; font-size: 1.35rem;"></i>
+                <span class="fw-bold">ParkApp</span>
+                <span class="park-brand-badge">El Alto</span>
+            </a>
+        </div>
+
+        <!-- Botón Móvil Toggler (Tableta / Celular) -->
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Navegación">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navMain">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <!-- Vistas de Conductor -->
-                <li class="nav-item">
-                    <a class="nav-link" href="<?= BASE_URL ?>/disponibilidad">
-                        <i class="bi bi-geo-alt me-1"></i>Disponibilidad
-                    </a>
-                </li>
-                <?php if ($isAuth && $rol === 3): ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= BASE_URL ?>/reservar">
-                            <i class="bi bi-plus-circle me-1"></i>Reservar Espacio
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= BASE_URL ?>/mis-reservas">
-                            <i class="bi bi-calendar-check me-1"></i>Mis Reservas
-                        </a>
-                    </li>
-                <?php endif; ?>
 
-                <!-- Vistas de Operador de Caseta -->
-                <?php if ($isAuth && ($rol === 1 || $rol === 2)): ?>
-                    <li class="nav-item">
-                        <a class="nav-link text-info fw-semibold" href="<?= BASE_URL ?>/caseta">
-                            <i class="bi bi-speedometer2 me-1"></i>Control Caseta
-                        </a>
-                    </li>
-                <?php endif; ?>
+        <div class="collapse navbar-collapse park-nav-collapse" id="navMain">
+            <!-- 2. Enlaces Principales Centrados (Centro de la Pantalla - Sin iconos al inicio de las palabras) -->
+            <div class="park-nav-center-col">
+                <ul class="park-main-nav">
+                    
+                    <?php if ($rol === 1): ?>
+                        <!-- NAVEGACIÓN ADMINISTRADOR -->
+                        <li class="nav-item">
+                            <a class="nav-link <?= ($currentRoute === 'admin/dashboard') ? 'active' : '' ?>" href="<?= BASE_URL ?>/admin/dashboard">
+                                Dashboard
+                            </a>
+                        </li>
 
-                <!-- Vistas de Administrador -->
-                <?php if ($isAuth && $rol === 1): ?>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-warning" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-gear-fill me-1"></i>Administración
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="<?= BASE_URL ?>/admin/dashboard"><i class="bi bi-graph-up me-2"></i>Dashboard</a></li>
-                            <li><a class="dropdown-item" href="<?= BASE_URL ?>/admin/parqueos"><i class="bi bi-building me-2"></i>Parqueos</a></li>
-                            <li><a class="dropdown-item" href="<?= BASE_URL ?>/admin/espacios"><i class="bi bi-grid-3x3-gap me-2"></i>Espacios</a></li>
-                            <li><a class="dropdown-item" href="<?= BASE_URL ?>/admin/tarifas"><i class="bi bi-cash-coin me-2"></i>Tarifas</a></li>
-                            <li><a class="dropdown-item" href="<?= BASE_URL ?>/admin/usuarios"><i class="bi bi-people me-2"></i>Usuarios & Operadores</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="<?= BASE_URL ?>/reportes/ingresos"><i class="bi bi-file-earmark-bar-graph me-2"></i>Reporte de Ingresos</a></li>
-                            <li><a class="dropdown-item" href="<?= BASE_URL ?>/reportes/ocupacion"><i class="bi bi-pie-chart me-2"></i>Reporte de Ocupación</a></li>
-                        </ul>
-                    </li>
-                <?php endif; ?>
-            </ul>
+                        <!-- Dropdown Gestión -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle <?= str_starts_with($currentRoute, 'admin/') && $currentRoute !== 'admin/dashboard' ? 'active' : '' ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Gestión
+                            </a>
+                            <ul class="dropdown-menu park-dropdown-menu">
+                                <li class="park-dropdown-header">Infraestructura</li>
+                                <li>
+                                    <a class="dropdown-item <?= ($currentRoute === 'admin/parqueos') ? 'active' : '' ?>" href="<?= BASE_URL ?>/admin/parqueos">
+                                        Sedes y Parqueos
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item <?= ($currentRoute === 'admin/espacios') ? 'active' : '' ?>" href="<?= BASE_URL ?>/admin/espacios">
+                                        Matriz de Espacios
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider my-1"></li>
+                                <li class="park-dropdown-header">Configuración</li>
+                                <li>
+                                    <a class="dropdown-item <?= ($currentRoute === 'admin/tarifas') ? 'active' : '' ?>" href="<?= BASE_URL ?>/admin/tarifas">
+                                        Tarifas y Tolerancias
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item <?= ($currentRoute === 'admin/usuarios') ? 'active' : '' ?>" href="<?= BASE_URL ?>/admin/usuarios">
+                                        Personal y Usuarios
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
 
-            <ul class="navbar-nav ms-auto">
-                <?php if ($isAuth): ?>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle me-1"></i><?= htmlspecialchars($userName) ?>
-                            <span class="badge bg-secondary ms-1"><?= htmlspecialchars(Auth::roleName()) ?></span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item text-danger" href="<?= BASE_URL ?>/logout"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
-                        </ul>
-                    </li>
-                <?php else: ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?= BASE_URL ?>/registro"><i class="bi bi-person-plus me-1"></i>Registrarse</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-sm ms-2 px-3 fw-semibold text-white" style="background-color: #c89234;" href="<?= BASE_URL ?>/login"><i class="bi bi-box-arrow-in-right me-1"></i>Ingresar</a>
-                    </li>
-                <?php endif; ?>
-            </ul>
+                        <!-- Dropdown Reportes -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle <?= str_starts_with($currentRoute, 'reportes/') ? 'active' : '' ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Reportes
+                            </a>
+                            <ul class="dropdown-menu park-dropdown-menu">
+                                <li class="park-dropdown-header">Emisión de Informes</li>
+                                <li>
+                                    <a class="dropdown-item <?= ($currentRoute === 'reportes/ingresos') ? 'active' : '' ?>" href="<?= BASE_URL ?>/reportes/ingresos">
+                                        Recaudación Financiera
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item <?= ($currentRoute === 'reportes/ocupacion') ? 'active' : '' ?>" href="<?= BASE_URL ?>/reportes/ocupacion">
+                                        Ocupación y Rotación
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Dropdown Operaciones -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle <?= in_array($currentRoute, ['caseta', 'reservar', 'mis-reservas', 'disponibilidad']) ? 'active' : '' ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Operaciones
+                            </a>
+                            <ul class="dropdown-menu park-dropdown-menu">
+                                <li class="park-dropdown-header">Módulo de Caseta</li>
+                                <li>
+                                    <a class="dropdown-item <?= ($currentRoute === 'caseta') ? 'active' : '' ?>" href="<?= BASE_URL ?>/caseta">
+                                        Control de Caseta
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider my-1"></li>
+                                <li class="park-dropdown-header">Portal Conductor</li>
+                                <li>
+                                    <a class="dropdown-item <?= ($currentRoute === 'disponibilidad') ? 'active' : '' ?>" href="<?= BASE_URL ?>/disponibilidad">
+                                        Ver Disponibilidad
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item <?= ($currentRoute === 'reservar') ? 'active' : '' ?>" href="<?= BASE_URL ?>/reservar">
+                                        Reservar Espacio
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item <?= ($currentRoute === 'mis-reservas') ? 'active' : '' ?>" href="<?= BASE_URL ?>/mis-reservas">
+                                        Mis Reservas
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                    <?php elseif ($rol === 2): ?>
+                        <!-- NAVEGACIÓN OPERADOR DE CASETA -->
+                        <li class="nav-item">
+                            <a class="nav-link <?= ($currentRoute === 'caseta') ? 'active' : '' ?>" href="<?= BASE_URL ?>/caseta">
+                                Panel Caseta
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= ($currentRoute === 'caseta/ingreso') ? 'active' : '' ?>" href="<?= BASE_URL ?>/caseta/ingreso">
+                                Registrar Ingreso
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= ($currentRoute === 'caseta/salida') ? 'active' : '' ?>" href="<?= BASE_URL ?>/caseta/salida">
+                                Salida y Cobro
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= ($currentRoute === 'disponibilidad') ? 'active' : '' ?>" href="<?= BASE_URL ?>/disponibilidad">
+                                Disponibilidad
+                            </a>
+                        </li>
+
+                    <?php else: ?>
+                        <!-- NAVEGACIÓN CONDUCTOR / VISITANTE -->
+                        <li class="nav-item">
+                            <a class="nav-link <?= ($currentRoute === '' || $currentRoute === 'disponibilidad') ? 'active' : '' ?>" href="<?= BASE_URL ?>/disponibilidad">
+                                Disponibilidad
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= ($currentRoute === 'reservar') ? 'active' : '' ?>" href="<?= BASE_URL ?>/reservar">
+                                Reservar Espacio
+                            </a>
+                        </li>
+                        <?php if ($isAuth): ?>
+                            <li class="nav-item">
+                                <a class="nav-link <?= ($currentRoute === 'mis-reservas' || str_starts_with($currentRoute, 'reserva')) ? 'active' : '' ?>" href="<?= BASE_URL ?>/mis-reservas">
+                                    Mis Reservas
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                    <?php endif; ?>
+
+                </ul>
+            </div>
+
+            <!-- 3. Perfil de Usuario / Inicio de Sesión (Derecha) -->
+            <div class="park-nav-user-col">
+                <ul class="park-user-nav">
+                    <?php if ($isAuth): ?>
+                        <?php
+                        $badgeRolClass = match($rol) {
+                            1 => 'bg-danger text-white',
+                            2 => 'bg-info text-dark',
+                            3 => 'bg-warning text-dark',
+                            default => 'bg-secondary text-white'
+                        };
+                        $nombreRol = match($rol) {
+                            1 => 'Administrador',
+                            2 => 'Operador',
+                            3 => 'Conductor',
+                            default => 'Usuario'
+                        };
+                        ?>
+                        <li class="nav-item dropdown">
+                            <a class="park-user-chip dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle fs-5 me-2" style="color: #ffd88a;"></i>
+                                <span class="text-truncate" style="max-width: 140px;"><?= htmlspecialchars($userName) ?></span>
+                                <span class="badge <?= $badgeRolClass ?> ms-2 py-1 px-2" style="font-size: 0.72rem; letter-spacing: 0.3px;">
+                                    <?= $nombreRol ?>
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end park-dropdown-menu">
+                                <li class="park-dropdown-header">Cuenta de Usuario</li>
+                                <li class="px-3 py-1">
+                                    <div class="fw-bold text-dark small text-truncate" style="max-width: 220px;"><?= htmlspecialchars($userName) ?></div>
+                                    <div class="text-muted small text-truncate" style="max-width: 220px; font-size: 0.75rem;"><?= htmlspecialchars($userEmail) ?></div>
+                                </li>
+                                <li><hr class="dropdown-divider my-1"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger fw-semibold" href="<?= BASE_URL ?>/logout">
+                                        <i class="bi bi-box-arrow-right text-danger me-2"></i>Cerrar Sesión
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    <?php else: ?>
+                        <li class="nav-item me-xl-2">
+                            <a class="nav-link" href="<?= BASE_URL ?>/registro">
+                                <i class="bi bi-person-plus me-1"></i>Registrarse
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-sm px-3 fw-bold text-white shadow-sm" style="background-color: #c89234; border-radius: 6px;" href="<?= BASE_URL ?>/login">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Ingresar
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </div>
         </div>
     </div>
 </nav>
 <main class="container my-4 flex-grow-1">
+

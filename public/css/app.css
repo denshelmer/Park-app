@@ -401,3 +401,410 @@ body {
     font-size: 0.9rem;
 }
 
+/* ==========================================
+   BARRA DE NAVEGACIÓN CORPORATIVA (NAVBAR)
+   ========================================== */
+.park-navbar {
+    background-color: #152b47;
+    border-bottom: 3px solid #c89234;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.15);
+    padding: 0.65rem 1.25rem;
+}
+
+.park-navbar .navbar-brand {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+}
+
+.park-navbar .navbar-brand:hover {
+    opacity: 0.92;
+    color: #ffffff;
+}
+
+.park-brand-badge {
+    background-color: rgba(200, 146, 52, 0.2);
+    color: #ffd88a;
+    border: 1px solid rgba(200, 146, 52, 0.45);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+    letter-spacing: 0.3px;
+    vertical-align: middle;
+}
+
+/* ==============================================================================
+   ESTRUCTURA DE NAVEGACIÓN Y CENTRADO MATEMÁTICO EXACTO (DESKTOP)
+   ============================================================================== */
+@media (min-width: 1200px) {
+    .park-nav-container {
+        display: grid !important;
+        grid-template-columns: 1fr auto 1fr !important;
+        align-items: center !important;
+        width: 100% !important;
+        gap: 1.5rem !important;
+    }
+
+    .park-nav-brand-col {
+        grid-column: 1 !important;
+        justify-self: start !important;
+    }
+
+    .park-nav-collapse {
+        display: contents !important;
+    }
+
+    .park-nav-center-col {
+        grid-column: 2 !important;
+        justify-self: center !important;
+    }
+
+    .park-nav-user-col {
+        grid-column: 3 !important;
+        justify-self: end !important;
+    }
+}
+
+/* ==============================================================================
+   OPCIONES CENTRALES: SEPARACIÓN Y PADDING ADECUADO (NO CUADROS PEGADOS)
+   ============================================================================== */
+.park-main-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* Separación generosa entre cada opción */
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.park-main-nav .nav-item {
+    display: inline-flex;
+}
+
+.park-main-nav .nav-link {
+    color: rgba(255, 255, 255, 0.88) !important;
+    font-size: 0.92rem;
+    font-weight: 500;
+    padding: 0.6rem 1.15rem !important; /* Acolchado interior cómodo */
+    border-radius: 8px; /* Cuadro suave independiente */
+    border: 1px solid transparent;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+    text-decoration: none;
+}
+
+.park-main-nav .nav-link:hover {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.18);
+    transform: translateY(-1px);
+}
+
+.park-main-nav .nav-link.active {
+    color: #ffffff !important;
+    background-color: rgba(200, 146, 52, 0.28);
+    border-color: rgba(200, 146, 52, 0.55);
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* Menús desplegables refinados */
+.park-dropdown-menu {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
+    padding: 0.55rem 0.5rem;
+    min-width: 230px;
+    animation: fadeInMenu 0.15s ease-out;
+}
+
+@keyframes fadeInMenu {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.park-dropdown-header {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #94a3b8;
+    padding: 0.45rem 1.1rem 0.2rem 1.1rem;
+}
+
+.park-dropdown-menu .dropdown-item {
+    font-size: 0.88rem;
+    color: #334155;
+    padding: 0.55rem 1.1rem;
+    border-radius: 6px;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.park-dropdown-menu .dropdown-item:hover {
+    background-color: #f1f5f9;
+    color: #152b47;
+    font-weight: 500;
+}
+
+/* Chip de usuario en cabecera */
+.park-user-nav {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.park-user-chip {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 30px;
+    padding: 6px 14px 6px 10px;
+    color: #ffffff !important;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.86rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.park-user-chip:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.35);
+    color: #ffffff !important;
+}
+
+/* ==============================================================================
+   RESPONSIVE PARA TABLETA Y CELULAR (< 1200px)
+   ============================================================================== */
+@media (max-width: 1199.98px) {
+    .park-navbar .container-fluid {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .park-nav-collapse {
+        background-color: #0d1b2a;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-top: 0.75rem;
+        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.4);
+        width: 100%;
+    }
+
+    .park-nav-center-col {
+        width: 100%;
+    }
+
+    .park-main-nav {
+        flex-direction: column;
+        gap: 0.6rem;
+        width: 100%;
+    }
+
+    .park-main-nav .nav-item {
+        width: 100%;
+        display: block;
+    }
+
+    .park-main-nav .nav-link {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+        padding: 0.8rem 1rem !important;
+        background-color: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 0.95rem;
+        min-height: 44px; /* Tamaño táctil óptimo */
+    }
+
+    .park-main-nav .nav-link:hover,
+    .park-main-nav .nav-link.active {
+        background-color: rgba(200, 146, 52, 0.25);
+        border-color: rgba(200, 146, 52, 0.45);
+    }
+
+    .park-dropdown-menu {
+        position: static !important;
+        transform: none !important;
+        background-color: rgba(15, 30, 50, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 0.4rem;
+        box-shadow: none;
+        padding: 0.5rem;
+        border-radius: 8px;
+    }
+
+    .park-dropdown-menu .dropdown-item {
+        color: #cbd5e1;
+        text-align: center;
+        justify-content: center;
+        padding: 0.65rem 1rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+    }
+
+    .park-dropdown-menu .dropdown-item:hover {
+        background-color: rgba(200, 146, 52, 0.2);
+        color: #ffd88a;
+    }
+
+    .park-nav-user-col {
+        width: 100%;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        margin-top: 1rem;
+        padding-top: 1rem;
+    }
+
+    .park-user-nav {
+        width: 100%;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .park-user-nav .nav-item {
+        width: 100%;
+        display: block;
+    }
+
+    .park-user-chip {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* ==============================================================================
+   RESPONSIVE GENERAL Y SEPARACIÓN DE TARJETAS / CUADROS EN EL CONTENIDO
+   ============================================================================== */
+
+/* Contenedor principal con respiración y márgenes equilibrados */
+main.container {
+    max-width: 1320px;
+}
+
+@media (max-width: 991.98px) {
+    main.container {
+        padding-left: 1.25rem !important;
+        padding-right: 1.25rem !important;
+        margin-top: 1.25rem !important;
+        margin-bottom: 2rem !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    main.container {
+        padding-left: 0.85rem !important;
+        padding-right: 0.85rem !important;
+        margin-top: 1rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+}
+
+/* Tarjetas formales: separación entre sí para que no estén pegadas */
+.formal-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+/* Separación entre columnas/cuadros en filas con cuadrículas */
+.row.g-3 > [class*="col-"],
+.row.g-4 > [class*="col-"] {
+    margin-bottom: 0.25rem;
+}
+
+@media (max-width: 767.98px) {
+    .card-body.p-4, 
+    .card-body.p-md-5, 
+    .formal-header.p-4,
+    .p-4, .p-5 {
+        padding: 1.2rem !important;
+    }
+}
+
+/* Cuadros de estadísticas / KPIs en tiempo real para celular y tableta */
+@media (max-width: 767.98px) {
+    .row.g-3 {
+        --bs-gutter-x: 0.85rem;
+        --bs-gutter-y: 0.85rem;
+    }
+    .card.p-3 {
+        padding: 0.9rem !important;
+        border-radius: 10px;
+    }
+    .card.p-3 .fs-2, 
+    .card.p-3 h2 {
+        font-size: 1.5rem !important;
+    }
+}
+
+/* Cuadrícula de caseta (cajones de estacionamiento interactivos) */
+@media (max-width: 575.98px) {
+    .col-6.col-sm-4.col-md-3.col-lg-2 {
+        width: 50%;
+        padding-left: 6px;
+        padding-right: 6px;
+        margin-bottom: 12px;
+    }
+    .col-6.col-sm-4.col-md-3.col-lg-2 .card {
+        padding: 0.75rem !important;
+        border-radius: 10px;
+    }
+    .col-6.col-sm-4.col-md-3.col-lg-2 .fs-4 {
+        font-size: 1.2rem !important;
+    }
+    .col-6.col-sm-4.col-md-3.col-lg-2 .btn-sm {
+        font-size: 0.78rem;
+        padding: 0.4rem 0.6rem;
+    }
+}
+
+/* Tablas responsivas con desplazamiento suave y sombras de desborde */
+.table-responsive {
+    border-radius: 8px;
+    -webkit-overflow-scrolling: touch;
+}
+.table-responsive::-webkit-scrollbar {
+    height: 6px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+}
+
+/* Botones táctiles cómodos en dispositivos móviles */
+@media (max-width: 767.98px) {
+    .btn {
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+
+

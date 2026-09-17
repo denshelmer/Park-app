@@ -45,7 +45,7 @@ $totalComprometidos = $conteoEspacios['ocupados'] + $conteoEspacios['reservados'
 $porcentajeOcupacion = round(($totalComprometidos / $totalCap) * 100);
 ?>
 <div class="row g-3 mb-4">
-    <div class="col-md-3">
+    <div class="col-12 col-sm-6 col-xl-3">
         <div class="card border-0 shadow-sm bg-white p-3 h-100 border-start border-4" style="border-left-color: #152b47 !important;">
             <div class="text-muted small fw-semibold text-uppercase">Vehículos Estacionados</div>
             <div class="d-flex align-items-baseline justify-content-between mt-2">
@@ -57,7 +57,7 @@ $porcentajeOcupacion = round(($totalComprometidos / $totalCap) * 100);
             </small>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-12 col-sm-6 col-xl-3">
         <div class="card border-0 shadow-sm bg-white p-3 h-100 border-start border-4" style="border-left-color: #198754 !important;">
             <div class="text-muted small fw-semibold text-uppercase">Recaudación de Hoy</div>
             <div class="d-flex align-items-baseline justify-content-between mt-2">
@@ -70,7 +70,7 @@ $porcentajeOcupacion = round(($totalComprometidos / $totalCap) * 100);
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-12 col-sm-6 col-xl-3">
         <div class="card border-0 shadow-sm bg-white p-3 h-100 border-start border-4" style="border-left-color: #c89234 !important;">
             <div class="text-muted small fw-semibold text-uppercase">Espacios Disponibles</div>
             <div class="d-flex align-items-baseline justify-content-between mt-2">
@@ -82,7 +82,7 @@ $porcentajeOcupacion = round(($totalComprometidos / $totalCap) * 100);
             </small>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-12 col-sm-6 col-xl-3">
         <div class="card border-0 shadow-sm bg-white p-3 h-100 border-start border-4" style="border-left-color: #0dcaf0 !important;">
             <div class="text-muted small fw-semibold text-uppercase">Nivel de Ocupación</div>
             <div class="d-flex align-items-baseline justify-content-between mt-2">
