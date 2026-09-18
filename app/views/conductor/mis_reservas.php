@@ -7,7 +7,7 @@
         <p class="text-muted small mb-0">Consulte el estado de sus reservas activas, descargue comprobantes QR o cancele si no podrá asistir</p>
     </div>
     <a href="<?= BASE_URL ?>/disponibilidad" class="btn fw-semibold text-white shadow-sm" style="background-color: #c89234;">
-        <i class="bi bi-plus-circle-fill me-1"></i>Nueva Reserva
+        Nueva Reserva
     </a>
 </div>
 
@@ -29,11 +29,10 @@
 <div class="card shadow-sm border-0">
     <?php if (empty($reservas)): ?>
         <div class="p-5 text-center">
-            <i class="bi bi-calendar-x fs-1 text-muted d-block mb-3"></i>
             <h5 class="fw-bold text-secondary">Aún no tiene reservas registradas</h5>
             <p class="text-muted small mb-4">Puede consultar la disponibilidad en tiempo real y asegurar su espacio de forma rápida.</p>
             <a href="<?= BASE_URL ?>/disponibilidad" class="btn fw-semibold text-white shadow-sm px-4" style="background-color: #c89234;">
-                <i class="bi bi-geo-alt me-1"></i>Explorar Parqueos Disponibles
+                Explorar Parqueos Disponibles
             </a>
         </div>
     <?php else: ?>
@@ -75,7 +74,7 @@
                                 </span>
                             </td>
                             <td>
-                                <div><i class="bi bi-clock me-1 text-muted"></i><?= $fechaPrevista ?></div>
+                                <div><?= $fechaPrevista ?></div>
                                 <?php if ($estado === 'Confirmada'): ?>
                                     <?php 
                                     $toleranciaMin = (int)($res['minutos_tolerancia'] ?? 15);
@@ -83,19 +82,19 @@
                                     $tLimite = $tLlegada + ($toleranciaMin * 60);
                                     ?>
                                     <div class="text-muted" style="font-size: 0.75rem;">
-                                        <i class="bi bi-stopwatch text-warning me-1"></i>Límite: <?= date('H:i', $tLimite) ?> (+<?= $toleranciaMin ?> min)
+                                        Límite: <?= date('H:i', $tLimite) ?> (+<?= $toleranciaMin ?> min)
                                     </div>
                                 <?php endif; ?>
                             </td>
                             <td>
                                 <?php if ($estado === 'Confirmada'): ?>
-                                    <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>Confirmada</span>
+                                    <span class="badge bg-warning text-dark">Confirmada</span>
                                 <?php elseif ($estado === 'En Parqueo'): ?>
-                                    <span class="badge bg-primary"><i class="bi bi-p-square me-1"></i>En Parqueo</span>
+                                    <span class="badge bg-primary">En Parqueo</span>
                                 <?php elseif ($estado === 'Finalizada'): ?>
-                                    <span class="badge bg-success"><i class="bi bi-check2-circle me-1"></i>Finalizada</span>
+                                    <span class="badge bg-success">Finalizada</span>
                                 <?php elseif ($estado === 'Cancelada'): ?>
-                                    <span class="badge bg-secondary"><i class="bi bi-x-circle me-1"></i>Cancelada</span>
+                                    <span class="badge bg-secondary">Cancelada</span>
                                 <?php else: ?>
                                     <span class="badge bg-info text-dark"><?= htmlspecialchars($estado) ?></span>
                                 <?php endif; ?>
@@ -104,7 +103,7 @@
                                 <div class="d-inline-flex gap-1">
                                     <a href="<?= BASE_URL ?>/reserva/qr?token=<?= urlencode($res['codigo_qr_token']) ?>" 
                                        class="btn btn-sm btn-outline-dark fw-semibold" title="Ver Comprobante QR">
-                                        <i class="bi bi-qr-code me-1"></i>QR
+                                        Ver QR
                                     </a>
 
                                     <?php if ($estado === 'Confirmada'): ?>
@@ -112,7 +111,7 @@
                                               onsubmit="return confirm('¿Está seguro de que desea cancelar esta reserva? El espacio <?= htmlspecialchars($res['codigo_espacio']) ?> será liberado inmediatamente.');">
                                             <input type="hidden" name="id_reserva" value="<?= $res['id_reserva'] ?>">
                                             <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancelar Reserva">
-                                                <i class="bi bi-x-lg"></i>
+                                                Cancelar
                                             </button>
                                         </form>
                                     <?php endif; ?>

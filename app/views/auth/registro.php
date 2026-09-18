@@ -6,25 +6,34 @@
     <title>Registro de Conductor - ParkApp El Alto</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/public/css/app.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/public/css/app.css?v=<?= time() ?>">
 </head>
-<body class="d-flex align-items-center justify-content-center min-vh-100 py-4" style="background: linear-gradient(135deg, #101c2e 0%, #1e3a5f 100%);">
-    <div class="card formal-card p-4 p-md-5 my-4" style="max-width: 540px; width: 100%;">
+<body class="d-flex align-items-center justify-content-center min-vh-100 py-4 px-3 auth-screen-wrapper" style="background: linear-gradient(135deg, #101c2e 0%, #1e3a5f 100%);">
+    
+    <!-- 1. Botón Explícito de Flecha Atrás (Esquina Superior Izquierda hacia Login) -->
+    <a href="<?= BASE_URL ?>/login" class="auth-back-btn" title="Volver al inicio de sesión">
+        <i class="bi bi-arrow-left"></i>
+        <span>Iniciar Sesión</span>
+    </a>
+
+    <div class="card formal-card p-4 p-md-5 my-4 shadow-lg" style="max-width: 540px; width: 100%;">
+        
+        <!-- 2. Logo / Cabecera como enlace al index -->
         <div class="text-center formal-header mb-4">
-            <div class="brand-badge mb-3">
-                <i class="bi bi-person-badge"></i>
-            </div>
-            <h3 class="fw-bold mb-1" style="color: var(--park-primary); letter-spacing: -0.5px;">Registro de Conductor</h3>
+            <a href="<?= BASE_URL ?>/" class="d-inline-block text-decoration-none auth-brand-link" title="Ir a la página principal de ParkApp">
+                <div class="brand-badge mb-3 mx-auto">
+                    <i class="bi bi-p-square-fill" style="color: #c89234;"></i>
+                </div>
+                <h3 class="fw-bold mb-1" style="color: var(--park-primary); letter-spacing: -0.5px;">Registro de Conductor</h3>
+            </a>
             <p class="text-muted small mb-0">Cree su cuenta para reservar espacios de parqueo en tiempo real</p>
         </div>
 
+        <!-- 3. Alertas con Alta Visibilidad y Contraste -->
         <?php if (!empty($error)): ?>
-            <div class="classic-alert classic-alert-danger mb-4" role="alert">
-                <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
-                <div>
-                    <strong>Revise los datos:</strong><br>
-                    <?= htmlspecialchars($error) ?>
-                </div>
+            <div class="auth-alert auth-alert-danger" role="alert">
+                <div class="auth-alert-title">Revise los datos ingresados</div>
+                <div class="auth-alert-body"><?= htmlspecialchars($error) ?></div>
             </div>
         <?php endif; ?>
 
@@ -43,8 +52,8 @@
             </div>
 
             <!-- CI con selector de Departamento y Teléfono -->
-            <div class="row g-2 mb-3">
-                <div class="col-md-7">
+            <div class="row g-3 mb-3">
+                <div class="col-12 col-md-7">
                     <label for="ci_numero" class="form-label fw-semibold small text-uppercase" style="letter-spacing: 0.5px;">Cédula de Identidad (CI)</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-card-text"></i></span>
@@ -63,7 +72,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-5">
+                <div class="col-12 col-md-5">
                     <label for="telefono" class="form-label fw-semibold small text-uppercase" style="letter-spacing: 0.5px;">Teléfono / Celular</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-telephone"></i></span>
@@ -89,8 +98,8 @@
             </div>
 
             <!-- Contraseña y Confirmación -->
-            <div class="row g-2 mb-4">
-                <div class="col-md-6">
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-md-6">
                     <label for="password" class="form-label fw-semibold small text-uppercase" style="letter-spacing: 0.5px;">Contraseña</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-lock"></i></span>
@@ -102,7 +111,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-12 col-md-6">
                     <label for="password_confirm" class="form-label fw-semibold small text-uppercase" style="letter-spacing: 0.5px;">Confirmar Contraseña</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
@@ -115,12 +124,12 @@
                     </div>
                 </div>
                 <div class="col-12">
-                    <small class="text-muted"><i class="bi bi-shield-check me-1 text-success"></i>La contraseña debe contener al menos 8 caracteres.</small>
+                    <small class="text-muted">La contraseña debe contener al menos 8 caracteres.</small>
                 </div>
             </div>
 
             <button type="submit" class="btn btn-primary-formal w-100 py-2 mb-3">
-                <i class="bi bi-check-circle me-2"></i>Registrar Cuenta
+                Registrar Cuenta
             </button>
         </form>
 

@@ -858,5 +858,118 @@ main.container {
     }
 }
 
+/* ==============================================================================
+   ESTILOS DE PANTALLAS DE AUTENTICACIÓN (LOGIN Y REGISTRO)
+   ============================================================================== */
+.auth-back-btn {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    z-index: 1050;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 30px;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    font-size: 0.88rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease-in-out;
+}
+
+.auth-back-btn:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: #c89234;
+    color: #ffd88a !important;
+    transform: translateX(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.auth-back-btn i {
+    font-size: 1.15rem;
+    transition: transform 0.2s ease;
+}
+
+.auth-back-btn:hover i {
+    transform: translateX(-3px);
+}
+
+.auth-brand-link {
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.auth-brand-link:hover {
+    transform: scale(1.02);
+    opacity: 0.94;
+}
+
+.auth-alert {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    text-align: left;
+}
+
+.auth-alert-danger {
+    background-color: #fff5f5;
+    border: 1px solid #fecaca;
+    border-left: 5px solid #dc2626;
+    color: #991b1b;
+}
+
+.auth-alert-danger .auth-alert-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #b91c1c;
+    margin-bottom: 3px;
+}
+
+.auth-alert-danger .auth-alert-body {
+    font-size: 0.88rem;
+    color: #450a0a;
+    line-height: 1.45;
+}
+
+.auth-alert-success {
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-left: 5px solid #16a34a;
+    color: #166534;
+}
+
+.auth-alert-success .auth-alert-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #15803d;
+    margin-bottom: 3px;
+}
+
+.auth-alert-success .auth-alert-body {
+    font-size: 0.88rem;
+    color: #052e16;
+    line-height: 1.45;
+}
+
+@media (max-width: 767.98px) {
+    .auth-back-btn {
+        top: 14px;
+        left: 14px;
+        padding: 6px 14px;
+        font-size: 0.82rem;
+    }
+    .auth-screen-wrapper {
+        padding-top: 4.8rem !important;
+        padding-bottom: 2rem !important;
+    }
+}
+
 
 

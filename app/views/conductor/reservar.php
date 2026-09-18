@@ -1,13 +1,8 @@
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-    <div>
-        <h2 class="fw-bold mb-1" style="color: #152b47;">
-            Nueva Reserva de Espacio
-        </h2>
-        <p class="text-muted small mb-0">Seleccione el parqueo, vehículo y hora prevista de llegada para asegurar su cajón</p>
-    </div>
-    <a href="<?= BASE_URL ?>/disponibilidad" class="btn btn-outline-secondary shadow-sm">
-        <i class="bi bi-arrow-left me-1"></i>Ver Disponibilidad
-    </a>
+<div class="mb-4">
+    <h2 class="fw-bold mb-1" style="color: #152b47;">
+        Nueva Reserva de Espacio
+    </h2>
+    <p class="text-muted small mb-0">Seleccione el parqueo, vehículo y hora prevista de llegada para asegurar su cajón</p>
 </div>
 
 <?php if (!empty($error) || isset($_SESSION['flash_error'])): ?>
@@ -96,7 +91,7 @@
                                        max="<?= date('Y-m-d\TH:i', strtotime('+48 hours')) ?>" required>
                             </div>
                             <div class="form-text text-muted small">
-                                <i class="bi bi-calendar-check text-success me-1"></i>Válido para <strong>hoy</strong> o hasta 48 hrs. Dispone de <strong>15 min de tolerancia</strong> tras esta hora.
+                                Válido para <strong>hoy</strong> o hasta 48 hrs. Dispone de <strong>15 min de tolerancia</strong> tras esta hora.
                             </div>
                         </div>
                     </div>
@@ -107,10 +102,10 @@
                     <div class="mt-4 pt-3 border-top">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <label class="form-label fw-bold mb-0" style="color: var(--park-primary); font-size: 1rem;">
-                                <i class="bi bi-grid-3x3-gap-fill me-1" style="color: var(--park-accent);"></i> Distribución de Espacios (Mapa Interactivo)
+                                Distribución de Espacios (Mapa Interactivo)
                             </label>
                             <span class="badge bg-light text-secondary border px-3 py-2" id="map-status-badge">
-                                <i class="bi bi-info-circle me-1"></i>Haga clic en un cajón libre
+                                Haga clic en un cajón libre
                             </span>
                         </div>
                         <p class="text-muted small mb-3">
@@ -161,14 +156,13 @@
                                 </div>
                             </div>
                             <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-clear-selection" title="Cambiar a asignación automática">
-                                <i class="bi bi-x-circle me-1"></i>Desmarcar (Auto)
+                                Desmarcar (Auto)
                             </button>
                         </div>
                     </div>
 
                     <!-- Alerta de Tolerancia Formal -->
                     <div class="classic-alert classic-alert-warning mt-4 mb-4">
-                        <i class="bi bi-info-circle alert-icon"></i>
                         <div>
                             <strong>Margen de Tolerancia Oficial:</strong><br>
                             Usted dispone de <strong>15 minutos de tolerancia</strong> a partir de su hora estimada de llegada. De no presentarse dentro de ese lapso, el sistema o el operador podrán reasignar el espacio.
@@ -177,10 +171,10 @@
 
                     <div class="d-flex justify-content-end gap-2 pt-2 border-top">
                         <a href="<?= BASE_URL ?>/disponibilidad" class="btn btn-outline-secondary px-4 py-2">
-                            <i class="bi bi-arrow-left me-1"></i>Volver
+                            Volver
                         </a>
                         <button type="submit" class="btn fw-semibold text-white shadow-sm px-4 py-2" style="background-color: #c89234;">
-                            <i class="bi bi-qr-code me-1"></i>Confirmar y Generar Código QR
+                            Confirmar y Generar Código QR
                         </button>
                     </div>
                 </form>
@@ -460,7 +454,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         selectionBox.style.display = 'none';
         mapStatusBadge.className = 'badge bg-light text-secondary border px-3 py-2';
-        mapStatusBadge.innerHTML = '<i class="bi bi-info-circle me-1"></i>Asignación automática';
+        mapStatusBadge.innerHTML = 'Asignación automática';
     }
 
     if (btnClearSelection) {
@@ -472,7 +466,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const tipoId = selectTipo.value;
 
         if (!parqueoId) {
-            mapPlaceholder.innerHTML = '<div class="text-muted"><i class="bi bi-arrow-up-circle me-1"></i>Seleccione un parqueo para ver la distribución de espacios.</div>';
+            mapPlaceholder.innerHTML = '<div class="text-muted">Seleccione un parqueo para ver la distribución de espacios.</div>';
             mapPlaceholder.style.display = 'block';
             mapContent.style.display = 'none';
             desmarcarEspacio();
@@ -497,7 +491,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!data.success || data.total_espacios === 0) {
                     mapContent.innerHTML = `
                         <div class="text-center py-4 text-muted">
-                            <i class="bi bi-exclamation-circle text-warning fs-3 d-block mb-2"></i>
                             <div>No se encontraron espacios registrados para este parqueo con el tipo de vehículo seleccionado.</div>
                             <small class="text-secondary">El sistema intentará asignar un cajón automáticamente al confirmar.</small>
                         </div>
@@ -514,7 +507,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     const headerBadge = document.createElement('div');
                     headerBadge.className = 'sector-title-badge';
-                    headerBadge.innerHTML = `<i class="bi bi-layers-half"></i> ${sector} <span class="badge bg-secondary ms-1">${espacios.length} cajones</span>`;
+                    headerBadge.innerHTML = `${sector} <span class="badge bg-secondary ms-1">${espacios.length} cajones</span>`;
                     sectorDiv.appendChild(headerBadge);
 
                     const gridDiv = document.createElement('div');
@@ -593,7 +586,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 selectionBox.style.display = 'flex';
 
                                 mapStatusBadge.className = 'badge bg-success text-white px-3 py-2';
-                                mapStatusBadge.innerHTML = `<i class="bi bi-check2-circle me-1"></i>Espacio ${esp.codigo_espacio} seleccionado`;
+                                mapStatusBadge.innerHTML = `Espacio ${esp.codigo_espacio} seleccionado`;
                             });
                         }
 
@@ -608,7 +601,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(err => {
                 console.error('Error al cargar mapa:', err);
-                mapPlaceholder.innerHTML = '<div class="text-danger small"><i class="bi bi-exclamation-triangle me-1"></i>No se pudo cargar la distribución de espacios.</div>';
+                mapPlaceholder.innerHTML = '<div class="text-danger small">No se pudo cargar la distribución de espacios.</div>';
                 mapPlaceholder.style.display = 'block';
             });
     }

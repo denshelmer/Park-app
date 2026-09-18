@@ -1,19 +1,9 @@
 <!-- Encabezado de la Sección Estandarizado -->
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-    <div>
-        <h2 class="fw-bold mb-1" style="color: #152b47;">
-            Disponibilidad de Parqueos
-        </h2>
-        <p class="text-muted small mb-0">Consulte en tiempo real los espacios libres en las diferentes zonas de la ciudad de El Alto</p>
-    </div>
-    <div class="d-flex align-items-center gap-2">
-        <span class="badge px-3 py-2 text-white shadow-sm" style="background-color: #152b47; font-size: 0.85rem; font-weight: 500;">
-            <i class="bi bi-broadcast me-1 text-success"></i>Monitoreo en Tiempo Real
-        </span>
-        <a href="<?= BASE_URL ?>/reservar" class="btn fw-semibold text-white shadow-sm" style="background-color: #c89234;">
-            <i class="bi bi-calendar-plus me-1"></i>Reservar Espacio
-        </a>
-    </div>
+<div class="mb-4">
+    <h2 class="fw-bold mb-1" style="color: #152b47;">
+        Disponibilidad de Parqueos
+    </h2>
+    <p class="text-muted small mb-0">Consulte en tiempo real los espacios libres en las diferentes zonas de la ciudad de El Alto</p>
 </div>
 
 <?php if (!empty($error) || isset($_SESSION['flash_error'])): ?>
@@ -35,9 +25,8 @@
     <?php if (empty($parqueos)): ?>
         <div class="col-12">
             <div class="formal-card p-5 text-center">
-                <i class="bi bi-building-slash fs-1 text-muted d-block mb-3"></i>
                 <h5 class="fw-bold text-secondary">No se encontraron establecimientos activos</h5>
-                <p class="text-muted small">Actualmente no existen parqueos habilitados en el sistema.</p>
+                <p class="text-muted small mb-0">Actualmente no existen parqueos habilitados en el sistema.</p>
             </div>
         </div>
     <?php else: ?>
@@ -61,7 +50,7 @@
                         </div>
 
                         <p class="text-muted small mb-3">
-                            <i class="bi bi-pin-map text-danger me-1"></i><?= htmlspecialchars($p['direccion']) ?>
+                            <?= htmlspecialchars($p['direccion']) ?>
                         </p>
 
                         <!-- Panel de Ocupación en Vivo -->
@@ -69,9 +58,9 @@
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <span class="small fw-semibold text-secondary">Disponibilidad:</span>
                                 <?php if ($disponible): ?>
-                                    <span class="badge bg-success px-2 py-1"><i class="bi bi-check-circle me-1"></i><?= $libres ?> Libres</span>
+                                    <span class="badge bg-success px-2 py-1"><?= $libres ?> Libres</span>
                                 <?php else: ?>
-                                    <span class="badge bg-danger px-2 py-1"><i class="bi bi-slash-circle me-1"></i>Completo</span>
+                                    <span class="badge bg-danger px-2 py-1">Completo</span>
                                 <?php endif; ?>
                             </div>
 
@@ -90,7 +79,7 @@
 
                         <!-- Ficha de Horarios -->
                         <div class="small text-muted mb-4 mt-auto">
-                            <i class="bi bi-clock me-1 text-primary"></i>Horario de atención: 
+                            Horario de atención: 
                             <strong class="text-dark">
                                 <?= !empty($p['hora_apertura']) ? substr($p['hora_apertura'], 11, 5) : '06:00' ?> &mdash; 
                                 <?= !empty($p['hora_cierre']) ? substr($p['hora_cierre'], 11, 5) : '23:00' ?>
@@ -100,11 +89,11 @@
                         <!-- Botón de Acción -->
                         <?php if ($disponible): ?>
                             <a href="<?= BASE_URL ?>/reservar?parqueo=<?= $p['id_parqueo'] ?>" class="btn btn-primary-formal w-100 text-center">
-                                <i class="bi bi-calendar-plus me-1"></i>Reservar Lugar
+                                Reservar Lugar
                             </a>
                         <?php else: ?>
                             <button class="btn btn-secondary w-100 text-center disabled" disabled>
-                                <i class="bi bi-lock me-1"></i>Sin Lugares Disponibles
+                                Sin Lugares Disponibles
                             </button>
                         <?php endif; ?>
                     </div>
