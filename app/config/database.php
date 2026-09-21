@@ -20,7 +20,9 @@ define('DB_DRIVER', '{Microsoft Access Driver (*.mdb, *.accdb)}');
 define('DB_DSN', 'odbc:Driver=' . DB_DRIVER . ';Dbq=' . DB_FILE . ';Uid=;Pwd=;');
 
 // URL base del sistema en XAMPP (ajustable según subdirectorio)
-$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
+$isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+    || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+$protocol = $isHttps ? "https://" : "http://";
 $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
 $scriptDir = str_replace('\\', '/', dirname($scriptName));
